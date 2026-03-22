@@ -1,0 +1,9 @@
+celery
+redis
+sqlalchemy
+sentence-transformers
+spacy
+faiss-cpu
+python-dotenv
+beautifulsoup4
+requests

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FactGuard — Automated Fact Checker for Vernacular News</title>
+  <meta name="description" content="AI-powered, multilingual fact-checking platform. Detect misinformation in seconds."/>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+  <!--
+  ══════════════════════════════════════════════════════════════
+   GSAP + ScrollTrigger CDN
+   These two scripts must load BEFORE sequence.js
+  ══════════════════════════════════════════════════════════════
+  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+/* ══════════════════════════════════
+   RESET & DESIGN TOKENS
+══════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --black:      #020100;
+  --cream:      #FFFDBB;
+  --cream-dim:  rgba(255,253,187,.55);
+  --cream-line: rgba(255,253,187,.14);
+  --cyan:       #2FF4DD;
+  --red:        #FC4402;
+  --green:      #51FC02;
+  --mono:       'Space Mono', monospace;
+  --display:    'Bebas Neue', sans-serif;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--cream);
+  font-family: var(--mono);
+  font-size: 14px;
+  overflow-x: hidden;
+}
+/* CRT scan-line texture */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);
+  pointer-events: none;
+  z-index: 9900;
+}
+
+/* ══════════════════════════════════
+   CURSOR GLOW
+══════════════════════════════════ */
+#cursor-glow {
+  position: fixed; width: 320px; height: 320px; border-radius: 50%;
+  background: radial-gradient(circle,rgba(47,244,221,.08) 0%,transparent 70%);
+  pointer-events: none; transform: translate(-50%,-50%); z-index: 9800;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CANVAS SEQUENCE SECTION
+   ─────────────────────────────────────────────────────────────
+   #seq-container  → full-screen wrapper that GSAP pins
+   #seq-canvas     → the <canvas> element drawn into by sequence.js
+   All overlay UI (nav, title, labels, bottom panels) sits on top
+══════════════════════════════════════════════════════════════ */
+
+/*
+  1. The container must be exactly 100vh so GSAP has a reference.
+     The actual "scroll runway" is defined by SCRUB_DURATION in sequence.js
+     (e.g., '+=400%' means 400vh of scroll space while pinned).
+*/
+#seq-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*
+  2. The canvas fills the entire container.
+     sequence.js handles pixel-perfect resizing.
+*/
+#seq-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;               /* behind all overlays */
+}
+
+/* ══ Loading progress bar ══ */
+#load-indicator {
+  position: absolute;
+  bottom: 20px; left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  z-index: 20;
+  text-align: center;
+  transition: opacity .6s ease;
+}
+#load-indicator span {
+  display: block;
+  font-size: .55rem; letter-spacing: .2em; color: var(--cyan); margin-bottom: .4rem;
+}
+#load-bar {
+  height: 2px; background: var(--cream-line); width: 100%;
+}
+#load-bar-fill {
+  height: 100%; background: var(--cyan); width: 0%;
+  transition: width .2s linear;
+}
+
+/* ══ Canvas overlay UI ══ */
+.seq-overlay {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ── NAV ── */
+#seq-nav {
+  top: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--cream-line);
+  backdrop-filter: blur(5px);
+  background: rgba(2,1,0,.38);
+}
+.nav-label { font-size: .6rem; letter-spacing: .22em; color: var(--cream-dim); }
+.nav-links { display: flex; gap: 2rem; pointer-events: all; }
+.nav-links a {
+  color: var(--cream-dim); text-decoration: none;
+  font-size: .68rem; letter-spacing: .15em; transition: color .2s;
+}
+.nav-links a:hover { color: var(--cyan); }
+
+/* ── BIG TITLE (Scene 1) ── */
+#seq-title {
+  top: 50%; left: 50%;
+  transform: translateX(-50%) translateY(-54%);
+  font-family: var(--display);
+  font-size: clamp(4rem, 15vw, 16rem);
+  line-height: .85; text-align: center;
+  white-space: nowrap;
+  color: rgba(255,253,187,0.92);
+  /* Layered cinematic glow: cyan inner → wide diffuse */
+  text-shadow:
+    0 0 40px rgba(47,244,221,0.55),
+    0 0 100px rgba(47,244,221,0.25),
+    0 0 200px rgba(47,244,221,0.12),
+    2px 2px 0px rgba(0,0,0,0.8);
+  letter-spacing: .06em;
+  user-select: none;
+  transition: opacity .08s linear, transform .08s linear;
+  will-change: opacity, transform;
+}
+
+/* ── Scene 2 label (fades IN) ── */
+#seq-scene2-label {
+  bottom: 5rem; left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(.65rem, 1.1vw, .85rem);
+  letter-spacing: .32em; color: var(--cream);
+  text-transform: uppercase; white-space: nowrap;
+  opacity: 0; transition: opacity .1s linear;
+}
+
+/* ── Bottom panels (Scene 1) ── */
+#seq-bottom {
+  bottom: 0; left: 0; right: 0;
+  display: grid; grid-template-columns: auto 1fr auto;
+  border-top: 1px solid var(--cream-line);
+  transition: opacity .1s linear;
+}
+.seq-panel {
+  padding: 1.2rem 2rem;
+  border-right: 1px solid var(--cream-line);
+}
+.seq-panel:last-child { border-right: none; }
+.panel-tag { font-size: .55rem; letter-spacing: .22em; color: var(--cyan); margin-bottom: .35rem; }
+.panel-h   { font-size: clamp(.75rem,1.3vw,.95rem); letter-spacing: .06em; text-transform: uppercase; line-height: 1.4; }
+.cta-wrap  { display: flex; align-items: center; justify-content: flex-end; pointer-events: all; }
+.cta-btn {
+  background: var(--cream); color: var(--black); font-family: var(--mono); font-weight: 700;
+  font-size: .74rem; letter-spacing: .14em; padding: .85rem 1.8rem; border: none; cursor: pointer;
+  text-decoration: none; text-transform: uppercase; display: inline-block;
+  transition: background .2s, box-shadow .2s;
+}
+.cta-btn:hover { background: var(--cyan); box-shadow: 0 0 24px var(--cyan); }
+.stat-big   { font-family: var(--display); font-size: clamp(1.8rem,3.5vw,3rem); line-height: 1; }
+.stat-label { font-size: .56rem; letter-spacing: .15em; color: var(--cream-dim); }
+
+/* ══════════════════════════════════
+   MARQUEE
+══════════════════════════════════ */
+.marquee-wrap {
+  overflow: hidden; border-top: 1px solid var(--cream-line);
+  border-bottom: 1px solid var(--cream-line); padding: .65rem 0; background: var(--black);
+}
+.marquee-track { display: flex; width: max-content; animation: mq 26s linear infinite; }
+.marquee-track:hover { animation-play-state: paused; }
+.marquee-item { font-size: .65rem; letter-spacing: .22em; color: var(--cream-dim); padding: 0 3rem; white-space: nowrap; text-transform: uppercase; }
+.marquee-item span { color: var(--cyan); margin-right: .4rem; }
+@keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ══════════════════════════════════════════════
+   BELOW-FOLD SECTIONS
+══════════════════════════════════════════════ */
+.section-wrap { max-width: 1400px; margin: 0 auto; padding: 6rem 2rem; border-bottom: 1px solid var(--cream-line); }
+
+/* ── TYPE REVEAL ── */
+.type-reveal { overflow: hidden; }
+.type-reveal .inner { display: block; transform: translateY(110%); transition: transform .9s cubic-bezier(.16,1,.3,1); }
+.type-reveal.is-visible .inner { transform: translateY(0); }
+
+.sec-super {
+  font-family: var(--display);
+  font-size: clamp(3rem, 8vw, 8rem);
+  text-transform: uppercase; letter-spacing: .03em; line-height: .92;
+}
+.accent-cyan { color: var(--cyan); }
+.accent-red  { color: var(--red); }
+.accent-green{ color: var(--green); }
+
+.manifesto-body {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-top: 4rem; align-items: start;
+}
+.manifesto-body p { color: var(--cream-dim); font-size: clamp(.86rem,1.1vw,1rem); line-height: 1.95; }
+.stat-row { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.5rem; }
+.stat-num { font-family: var(--display); font-size: clamp(2.5rem,5vw,4.5rem); line-height: 1; }
+.stat-desc{ font-size: .62rem; letter-spacing: .18em; color: var(--cream-dim); }
+
+/* Generic fade/slide reveals */
+.reveal-up   { opacity: 0; transform: translateY(48px); will-change: opacity,transform; }
+.reveal-left { opacity: 0; transform: translateX(-60px); will-change: opacity,transform; }
+.reveal-fade { opacity: 0; will-change: opacity; }
+.reveal-up.is-visible,.reveal-left.is-visible,.reveal-fade.is-visible { opacity:1; transform:none; transition: opacity .75s cubic-bezier(.16,1,.3,1), transform .75s cubic-bezier(.16,1,.3,1); }
+
+/* ── 3 CARD GRID ── */
+.cards-grid { display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--cream-line); }
+.sc-card {
+  padding: 2.8rem 2rem; border-right: 1px solid var(--cream-line); position: relative; overflow: hidden;
+  opacity: 0; /* GSAP animates this */ will-change: opacity,transform; transition: background .3s;
+}
+.sc-card:last-child { border-right: none; }
+.sc-card::before { content:''; position:absolute; bottom:0; left:0; width:0%; height:2px; transition:width .45s cubic-bezier(.16,1,.3,1); }
+.sc-card:nth-child(1)::before { background: var(--red); }
+.sc-card:nth-child(2)::before { background: var(--cyan); }
+.sc-card:nth-child(3)::before { background: var(--green); }
+.sc-card:hover { background: rgba(255,253,187,.04); }
+.sc-card:hover::before { width: 100%; }
+.sc-num  { font-family: var(--display); font-size: 4rem; color: var(--cream-line); line-height: 1; margin-bottom: .5rem; }
+.sc-head { font-family: var(--display); font-size: 1.8rem; letter-spacing: .06em; margin-bottom: .3rem; }
+.sc-tag  { font-size: .56rem; letter-spacing: .18em; color: var(--cream-dim); border: 1px solid var(--cream-line); display:inline-block; padding: .1rem .5rem; margin-bottom: 1.2rem; }
+.sc-body { color: var(--cream-dim); font-size: .83rem; line-height: 1.85; margin-bottom: 1.5rem; }
+.sc-foot { font-size: .62rem; letter-spacing: .12em; color: var(--cream-dim); border-top: 1px solid var(--cream-line); padding-top: .8rem; }
+
+/* ── PIPELINE ── */
+.pipe-step { display: grid; grid-template-columns: 60px 28px 1fr; align-items: start; border-top: 1px solid var(--cream-line); padding: 2rem 0; opacity:0; will-change: opacity,transform; }
+.step-num  { font-size: .6rem; letter-spacing: .15em; color: var(--cream-dim); padding-top: .2rem; }
+.step-line { width:1px; background:var(--cream-line); margin:0 auto; min-height:80px; position:relative; overflow:hidden; }
+.step-line::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:8px; height:8px; border-radius:50%; background:var(--cyan); box-shadow:0 0 8px var(--cyan); }
+.step-body { padding-left: 2rem; }
+.step-head { font-family: var(--display); font-size: 1.5rem; letter-spacing: .08em; margin-bottom: .6rem; }
+.step-body p { color: var(--cream-dim); max-width: 700px; }
+.step-eg   { display:flex; align-items:center; gap:1rem; margin-top:1rem; font-size:.76rem; flex-wrap:wrap; }
+.ex-in  { color:var(--red);   border:1px solid rgba(252,68,2,.4);  padding:.25rem .55rem; }
+.ex-out { color:var(--green); border:1px solid rgba(81,252,2,.4);  padding:.25rem .55rem; }
+
+/* ── VERIFY TOOL ── */
+#verify-section .verify-tool { border:1px solid var(--cream-line); padding:2rem; max-width:860px; margin:2rem auto 0; position:relative; }
+#verify-section .verify-tool::before,#verify-section .verify-tool::after { content:''; position:absolute; width:12px; height:12px; border-color:var(--cyan); border-style:solid; }
+#verify-section .verify-tool::before { top:-1px; left:-1px; border-width:2px 0 0 2px; }
+#verify-section .verify-tool::after  { bottom:-1px; right:-1px; border-width:0 2px 2px 0; }
+.tool-label { font-size:.6rem; letter-spacing:.2em; color:var(--cyan); display:block; margin-bottom:1rem; }
+.claim-textarea { width:100%; background:transparent; border:1px solid var(--cream-line); color:var(--cream); font-family:var(--mono); font-size:.88rem; padding:1rem; resize:none; outline:none; transition:border-color .2s; }
+.claim-textarea:focus { border-color:var(--cyan); box-shadow:0 0 10px rgba(47,244,221,.14); }
+.claim-textarea::placeholder { color:var(--cream-dim); opacity:.5; }
+.tool-actions { display:flex; justify-content:space-between; align-items:center; margin-top:1.2rem; flex-wrap:wrap; gap:1rem; }
+.lang-detect { display:flex; align-items:center; gap:.5rem; font-size:.68rem; }
+.lang-label  { color:var(--cream-dim); letter-spacing:.1em; }
+.lang-value  { color:var(--cyan); font-weight:700; }
+.loading-seq { max-width:600px; margin:2rem auto; border:1px solid var(--cream-line); padding:1.5rem 2rem; }
+.load-step   { font-size:.76rem; letter-spacing:.1em; color:var(--cream-dim); margin-bottom:.6rem; transition:color .3s; }
+.load-step.done   { color:var(--green); }
+.load-step.active { color:var(--cyan); animation:pulse .8s infinite alternate; }
+@keyframes pulse { from{opacity:.5} to{opacity:1} }
+.result-card { border:1px solid var(--cream-line); padding:2rem; margin-top:2rem; animation:fadeUp .5s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.result-row  { display:grid; grid-template-columns:1fr 1fr 1fr; gap:2rem; }
+.result-col  { padding:0 1rem; }
+.result-col.center { text-align:center; border-left:1px solid var(--cream-line); border-right:1px solid var(--cream-line); }
+.result-label { font-size:.58rem; letter-spacing:.2em; color:var(--cream-dim); margin-bottom:.5rem; }
+.result-value { font-size:.84rem; color:var(--cream); line-height:1.5; }
+.verdict-badge { font-family:var(--display); font-size:2.5rem; padding:.5rem 1.5rem; border:2px solid var(--cream-line); display:inline-block; margin-bottom:1.5rem; transition:all .4s; }
+.verdict-badge.TRUE      { border-color:var(--green); color:var(--green); box-shadow:0 0 20px rgba(81,252,2,.3); }
+.verdict-badge.FALSE     { border-color:var(--red);   color:var(--red);   box-shadow:0 0 20px rgba(252,68,2,.3); }
+.verdict-badge.MISLEADING{ border-color:#FFD700; color:#FFD700; box-shadow:0 0 20px rgba(255,215,0,.3); }
+.verdict-badge.UNKNOWN   { border-color:var(--cream-dim); color:var(--cream-dim); }
+.conf-wrap { height:4px; background:var(--cream-line); margin-bottom:.5rem; }
+.conf-fill { height:100%; background:var(--cyan); width:0%; transition:width 1s ease; }
+.conf-lbl  { font-size:.65rem; letter-spacing:.1em; color:var(--cyan); }
+
+/* ── METRICS ── */
+.metrics-bar { display:flex; align-items:center; justify-content:space-around; padding:3rem 2rem; border-bottom:1px solid var(--cream-line); flex-wrap:wrap; gap:2rem; }
+.met-item { text-align:center; }
+.met-num  { font-family:var(--display); font-size:clamp(2rem,4vw,3.5rem); line-height:1; margin-bottom:.4rem; }
+.met-lbl  { font-size:.58rem; letter-spacing:.18em; color:var(--cream-dim); }
+.met-div  { width:1px; height:60px; background:var(--cream-line); }
+
+/* ── STACK ── */
+.stack-grid { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--cream-line); }
+.stack-pod  { padding:2rem; border-right:1px solid var(--cream-line); transition:background .3s; }
+.stack-pod:last-child { border-right:none; }
+.stack-pod:hover { background:rgba(47,244,221,.03); }
+.pod-head { font-size:.62rem; letter-spacing:.2em; color:var(--cyan); margin-bottom:1.2rem; border-bottom:1px solid var(--cream-line); padding-bottom:.5rem; }
+.stack-pod ul { list-style:none; }
+.stack-pod li { font-size:.82rem; color:var(--cream-dim); padding:.3rem 0; border-bottom:1px solid rgba(255,253,187,.05); }
+.stack-pod li::before { content:'» '; color:var(--green); }
+
+/* ── FOOTER ── */
+#footer { padding:0 2rem; }
+.foot-inner { display:flex; justify-content:space-between; align-items:flex-start; padding:2.5rem 0; border-bottom:1px solid var(--cream-line); gap:2rem; flex-wrap:wrap; }
+.foot-brand { font-family:var(--display); font-size:2rem; margin-bottom:.4rem; }
+.foot-desc  { font-size:.74rem; color:var(--cream-dim); line-height:1.6; }
+.foot-links { display:flex; gap:2rem; align-items:center; flex-wrap:wrap; }
+.foot-links a { color:var(--cream-dim); text-decoration:none; font-size:.68rem; letter-spacing:.15em; transition:color .2s; }
+.foot-links a:hover { color:var(--cyan); }
+.foot-copy  { display:flex; justify-content:space-between; padding:1rem 0; font-size:.58rem; letter-spacing:.12em; color:var(--cream-dim); }
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .cards-grid    { grid-template-columns:1fr; }
+  .sc-card       { border-right:none; border-bottom:1px solid var(--cream-line); }
+  .result-row    { grid-template-columns:1fr; }
+  .result-col.center { border:none; border-top:1px solid var(--cream-line); border-bottom:1px solid var(--cream-line); }
+  .met-div       { display:none; }
+  .manifesto-body{ grid-template-columns:1fr; }
+  .stack-grid    { grid-template-columns:repeat(2,1fr); }
+  #seq-bottom    { grid-template-columns:1fr; }
+}
+@media(max-width:600px){
+  .pipe-step  { grid-template-columns:40px 20px 1fr; }
+  .stack-grid { grid-template-columns:1fr; }
+}
+  </style>
+</head>
+<body>
+
+<!-- CURSOR GLOW -->
+<div id="cursor-glow"></div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     §1  CANVAS IMAGE SEQUENCE HERO
+     ─────────────────────────────────────────────────────────────
+     #seq-container is pinned by GSAP ScrollTrigger.
+     Scroll within this section scrubs through image frames on canvas.
+     All overlay text/panels sit above the canvas via z-index.
+════════════════════════════════════════════════════════════════ -->
+<section id="seq-container">
+
+  <!--
+    ◀ THE CANVAS  — sequence.js draws frames here.
+      DO NOT add any sizing or positioning styles here;
+      sequence.js handles all canvas sizing via JS.
+  -->
+  <canvas id="seq-canvas"></canvas>
+
+  <!-- Frame loading progress bar (auto-hides when all 180 images are ready) -->
+  <div id="load-indicator">
+    <span id="load-status-text">LOADING SEQUENCE…</span>
+    <div id="load-bar"><div id="load-bar-fill"></div></div>
+  </div>
+
+  <!-- ── NAV ── -->
+  <div id="seq-nav" class="seq-overlay">
+    <span class="nav-label">INTEGRITY</span>
+    <div class="nav-links">
+      <a href="#verify-section">VERIFY</a>
+      <a href="#pipeline">PIPELINE</a>
+      <a href="#solutions">SOLUTIONS</a>
+    </div>
+    <span class="nav-label">ADVANCEMENT</span>
+  </div>
+
+  <!-- ── HERO TITLE (fades out as sequence progresses) ── -->
+  <h1 id="seq-title" class="seq-overlay">FACTGUARD</h1>
+
+  <!-- ── Scene 2 label (fades in at end of sequence) ── -->
+  <p id="seq-scene2-label" class="seq-overlay">WHERE MISINFORMATION MEETS ITS MATCH.</p>
+
+  <!-- ── BOTTOM PANELS (fade out as sequence progresses) ── -->
+  <div id="seq-bottom" class="seq-overlay">
+    <div class="seq-panel">
+      <div class="panel-tag">MULTILINGUAL AI</div>
+      <p class="panel-h">AI-POWERED<br>FACT VERIFICATION.<br><span style="color:var(--cyan)">HINDI · ODIA · ENGLISH</span></p>
+    </div>
+    <div class="seq-panel cta-wrap">
+      <a href="#verify-section" class="cta-btn">VERIFY A CLAIM ›</a>
+    </div>
+    <div class="seq-panel" style="text-align:right">
+      <div class="panel-tag">THROUGHPUT</div>
+      <div class="stat-big"><span id="hero-counter">0</span>+</div>
+      <div class="stat-label">CLAIMS / MINUTE</div>
+    </div>
+  </div>
+
+</section><!-- /#seq-container -->
+
+<!-- ════════════════════════════════════════════════════
+     MARQUEE
+════════════════════════════════════════════════════ -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item"><span>◈</span>CLAIM EXTRACTION</span>
+    <span class="marquee-item"><span>◈</span>MULTILINGUAL SUPPORT</span>
+    <span class="marquee-item"><span>◈</span>VECTOR SEMANTIC SEARCH</span>
+    <span class="marquee-item"><span>◈</span>NLI VERIFICATION ENGINE</span>
+    <span class="marquee-item"><span>◈</span>HINDI · ODIA · ENGLISH</span>
+    <span class="marquee-item"><span>◈</span>1000+ CLAIMS / MIN</span>
+    <span class="marquee-item"><span>◈</span>TRUE / FALSE / MISLEADING</span>
+    <span class="marquee-item"><span>◈</span>FAISS PINECONE HUGGINGFACE</span>
+    <!-- Duplicate for seamless loop -->
+    <span class="marquee-item"><span>◈</span>CLAIM EXTRACTION</span>
+    <span class="marquee-item"><span>◈</span>MULTILINGUAL SUPPORT</span>
+    <span class="marquee-item"><span>◈</span>VECTOR SEMANTIC SEARCH</span>
+    <span class="marquee-item"><span>◈</span>NLI VERIFICATION ENGINE</span>
+    <span class="marquee-item"><span>◈</span>HINDI · ODIA · ENGLISH</span>
+    <span class="marquee-item"><span>◈</span>1000+ CLAIMS / MIN</span>
+    <span class="marquee-item"><span>◈</span>TRUE / FALSE / MISLEADING</span>
+    <span class="marquee-item"><span>◈</span>FAISS PINECONE HUGGINGFACE</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     §2  LARGE TYPOGRAPHY / MANIFESTO
+════════════════════════════════════════════════════ -->
+<section class="section-wrap" id="about">
+  <div class="type-reveal"><h2 class="sec-super"><span class="inner">WORLD'S GROWING NEED</span></h2></div>
+  <div class="type-reveal"><h2 class="sec-super accent-cyan"><span class="inner">FOR TRUTH &amp; ACCURACY</span></h2></div>
+  <div class="type-reveal"><h2 class="sec-super accent-red"><span class="inner">IN EVERY LANGUAGE.</span></h2></div>
+
+  <div class="manifesto-body">
+    <p class="reveal-up" id="manifesto-p">
+      Misinformation is not loud. It blends into our feeds in the languages we trust — Hindi, Odia, English — and spreads faster than the truth can follow.<br><br>
+      Most platforms react after the damage is done. FactGuard identifies false claims <em>before</em> they go viral — in milliseconds, at scale.
+    </p>
+    <div class="reveal-up" id="manifesto-stats" style="transition-delay:.2s">
+      <div class="stat-row"><div class="stat-num counter" data-target="1000" data-suffix="+">0</div><div class="stat-desc">CLAIMS PROCESSED<br>PER MINUTE</div></div>
+      <div class="stat-row"><div class="stat-num counter" data-target="95" data-suffix="%">0</div><div class="stat-desc">ACCURACY TARGET</div></div>
+      <div class="stat-row"><div class="stat-num">&lt;200<span style="font-size:.5em">ms</span></div><div class="stat-desc">API RESPONSE TIME</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     §3  3-COLUMN CARD GRID  (GSAP stagger fade+slide)
+════════════════════════════════════════════════════ -->
+<section class="section-wrap" id="solutions">
+  <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3rem;flex-wrap:wrap;gap:1rem;">
+    <h2 class="sec-super" id="cards-title" style="font-size:clamp(2rem,5vw,4.5rem)">OUR SOLUTIONS</h2>
+    <span style="font-size:.62rem;letter-spacing:.2em;color:var(--cream-dim)">[ AI · NLP · MULTILINGUAL ]</span>
+  </div>
+  <div class="cards-grid">
+    <div class="sc-card">
+      <div class="sc-num">01</div>
+      <div class="sc-head accent-red">CLAIM DETECTION</div>
+      <div class="sc-tag">Performance Engine</div>
+      <p class="sc-body">High-throughput NLP pipeline processes 1000+ claims per minute using batched inference. Lightweight models optimised for speed over size.</p>
+      <div class="sc-foot">[ spaCy · HuggingFace ]</div>
+    </div>
+    <div class="sc-card">
+      <div class="sc-num">02</div>
+      <div class="sc-head accent-cyan">SEMANTIC SEARCH</div>
+      <div class="sc-tag">Fact Retrieval</div>
+      <p class="sc-body">Vector-based semantic search goes beyond keywords — understanding meaning and context even across language and dialect variations.</p>
+      <div class="sc-foot">[ FAISS · Pinecone ]</div>
+    </div>
+    <div class="sc-card">
+      <div class="sc-num">03</div>
+      <div class="sc-head accent-green">MULTILINGUAL</div>
+      <div class="sc-tag">Language Layer</div>
+      <p class="sc-body">Hindi, Odia, and English supported natively. Indic NLP + Translation APIs ensure no regional language post goes unchecked.</p>
+      <div class="sc-foot">[ Indic NLP · Translate API ]</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     §4  VERIFY TOOL
+════════════════════════════════════════════════════ -->
+<section class="section-wrap" id="verify-section">
+  <div class="type-reveal" id="verify-head">
+    <h2 class="sec-super"><span class="inner">VERIFY NOW</span></h2>
+  </div>
+  <div class="verify-tool reveal-up" style="transition-delay:.1s" id="verify-tool-el">
+    <label class="tool-label" for="claim-input">PASTE NEWS / SOCIAL POST / CLAIM</label>
+    <textarea id="claim-input" class="claim-textarea" rows="5"
+      placeholder="e.g. Breaking! Drinking hot water cures all diseases&#10;or paste a Hindi / Odia news snippet here..."></textarea>
+    <div class="tool-actions">
+      <div class="lang-detect"><span class="lang-label">DETECTED LANGUAGE:</span><span class="lang-value" id="lang-display">—</span></div>
+      <button class="cta-btn" id="verify-btn">CHECK FACTS ›</button>
+    </div>
+  </div>
+  <div id="loading-panel" style="display:none">
+    <div class="loading-seq">
+      <div class="load-step" id="step-1">[ LANGUAGE DETECTION     ] ░░░░░░░░░░</div>
+      <div class="load-step" id="step-2">[ CLAIM OPTIMIZATION     ] ░░░░░░░░░░</div>
+      <div class="load-step" id="step-3">[ VECTOR SEARCH          ] ░░░░░░░░░░</div>
+      <div class="load-step" id="step-4">[ VERIFICATION ENGINE    ] ░░░░░░░░░░</div>
+    </div>
+  </div>
+  <div id="result-panel" style="display:none">
+    <div class="result-card">
+      <div class="result-row">
+        <div class="result-col"><div class="result-label">EXTRACTED CLAIM</div><div class="result-value" id="extracted-claim">—</div></div>
+        <div class="result-col center">
+          <div class="verdict-badge" id="verdict-badge">—</div>
+          <div class="conf-wrap"><div class="conf-fill" id="conf-bar"></div></div>
+          <div class="conf-lbl" id="conf-label">CONFIDENCE: —</div>
+        </div>
+        <div class="result-col"><div class="result-label">SOURCE REFERENCE</div><div class="result-value" id="source-ref">—</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     §5  PIPELINE
+════════════════════════════════════════════════════ -->
+<section class="section-wrap" id="pipeline">
+  <div class="type-reveal"><h2 class="sec-super"><span class="inner">THE PIPELINE</span></h2></div>
+  <div style="height:2rem"></div>
+  <div class="pipe-step"><div class="step-num">01</div><div class="step-line"></div><div class="step-body"><div class="step-head accent-cyan">INGESTION &amp; LANGUAGE LAYER</div><p>Accepts raw multilingual text. Detects Hindi, Odia, or English and translates to uniform processing language.</p></div></div>
+  <div class="pipe-step"><div class="step-num">02</div><div class="step-line"></div><div class="step-body"><div class="step-head accent-red">CLAIM OPTIMIZATION</div><p>Strips emotional noise and clickbait framing. Extracts the verifiable factual core.</p><div class="step-eg"><span class="ex-in">"Breaking! Hot water cures all diseases"</span><span style="color:var(--cream-dim)">→</span><span class="ex-out">"Drinking hot water cures diseases"</span></div></div></div>
+  <div class="pipe-step"><div class="step-num">03</div><div class="step-line"></div><div class="step-body"><div class="step-head accent-green">VECTOR RETRIEVAL</div><p>Dense embeddings queried against FAISS/Pinecone — WHO, government, and fact-checker verified records.</p></div></div>
+  <div class="pipe-step"><div class="step-num">04</div><div class="step-line"></div><div class="step-body"><div class="step-head accent-cyan">VERIFICATION ENGINE</div><p>NLI model compares claim vs retrieved facts: TRUE / FALSE / MISLEADING / UNKNOWN + confidence score.</p></div></div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     LIVE METRICS
+════════════════════════════════════════════════════ -->
+<div class="metrics-bar" id="live-metrics">
+  <div class="met-item"><div class="met-num counter" data-target="849200">0</div><div class="met-lbl">FACTS VERIFIED</div></div>
+  <div class="met-div"></div>
+  <div class="met-item"><div class="met-num"><span class="counter" data-target="150">0</span>ms</div><div class="met-lbl">AVERAGE LATENCY</div></div>
+  <div class="met-div"></div>
+  <div class="met-item"><div class="met-num"><span class="counter" data-target="99">0</span>.99%</div><div class="met-lbl">SYSTEM UPTIME</div></div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     THE COMPUTE
+════════════════════════════════════════════════════ -->
+<section class="section-wrap" id="compute">
+  <div class="type-reveal"><h2 class="sec-super"><span class="inner">THE COMPUTE</span></h2></div>
+  <div style="height:2rem"></div>
+  <div class="cards-grid compute-grid">
+    <div class="sc-card compute-card bracket-wrap">
+      <div class="sc-num">01</div>
+      <div class="sc-head accent-cyan">DEDICATED TPU CLUSTERS</div>
+      <p class="sc-body">Custom-silicon tensors optimized for 8-bit quantized transformer inference. Sub-millisecond latency on billion-parameter models.</p>
+    </div>
+    <div class="sc-card compute-card bracket-wrap">
+      <div class="sc-num">02</div>
+      <div class="sc-head" style="color:var(--neon-purple)">REDIS IN-MEMORY</div>
+      <p class="sc-body">High-availability caching layer with 4ns lookup times. Fact-checks already run are instantly retrieved globally across the CDN edge.</p>
+    </div>
+    <div class="sc-card compute-card bracket-wrap">
+      <div class="sc-num">03</div>
+      <div class="sc-head accent-green">DISTRIBUTED SCRAPERS</div>
+      <p class="sc-body">Automated dark-web and social ingestion nodes. Over 10M+ local endpoints scraped dynamically to detect vernacular narratives early.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     JOIN THE NETWORK
+════════════════════════════════════════════════════ -->
+<section class="network-wrap" id="join-network">
+  <div class="type-reveal" style="text-align: center; margin-bottom: 2rem;"><h2 class="sec-super"><span class="inner">JOIN THE NETWORK</span></h2></div>
+  <form id="waitlist-form" class="network-form reveal-up">
+    <div class="form-grp bracket-wrap" style="display:block">
+      <input type="text" id="nl-name" class="form-input" placeholder="[ ENTER_NAME ]" required />
+    </div>
+    <div class="form-grp bracket-wrap" style="display:block">
+      <input type="email" id="nl-email" class="form-input" placeholder="[ ENTER_EMAIL_ADDRESS ]" required />
+    </div>
+    <div class="form-grp bracket-wrap" style="display:block">
+      <input type="text" id="nl-company" class="form-input" placeholder="[ AUTHORIZED_COMPANY_OR_ORG ]" />
+    </div>
+    <button type="submit" class="form-btn">REQUEST ACCESS &gt;_</button>
+    <div class="form-status" id="form-status"></div>
+  </form>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     STACK
+════════════════════════════════════════════════════ -->
+<section class="section-wrap" id="stack">
+  <div class="type-reveal"><h2 class="sec-super"><span class="inner">DEPLOYMENT STACK</span></h2></div>
+  <div style="height:2rem"></div>
+  <div class="stack-grid">
+    <div class="stack-pod reveal-up"><div class="pod-head">FRONTEND</div><ul><li>React.js</li><li>Three.js / R3F</li><li>Framer Motion</li><li>TailwindCSS</li></ul></div>
+    <div class="stack-pod reveal-up" style="transition-delay:.12s"><div class="pod-head">BACKEND</div><ul><li>Python / FastAPI</li><li>Celery + Redis</li><li>SQLAlchemy ORM</li><li>PostgreSQL</li></ul></div>
+    <div class="stack-pod reveal-up" style="transition-delay:.24s"><div class="pod-head">AI / ML</div><ul><li>HuggingFace Transformers</li><li>Sentence Transformers</li><li>spaCy NLP</li><li>Indic NLP</li></ul></div>
+    <div class="stack-pod reveal-up" style="transition-delay:.36s"><div class="pod-head">INFRA</div><ul><li>Docker / Compose</li><li>GitHub Actions CI/CD</li><li>FAISS / Pinecone</li><li>Render / AWS / GCP</li></ul></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════ -->
+<footer id="footer">
+  <div style="height:1px;background:var(--cream-line)"></div>
+  <div class="foot-inner reveal-fade">
+    <div><div class="foot-brand">FACTGUARD</div><p class="foot-desc">Automated fact-checking for<br>vernacular news using AI.</p></div>
+    <div class="foot-links"><a href="#verify-section">VERIFY</a><a href="#pipeline">PIPELINE</a><a href="#solutions">SOLUTIONS</a><a href="#stack">STACK</a></div>
+  </div>
+  <div class="foot-copy"><span>© 2025 FACTGUARD — ALL RIGHTS RESERVED</span><span>BUILT WITH AI + NLP</span></div>
+</footer>
+
+<!--
+  ════════════════════════════════════════════════════════════════
+  sequence.js  ← canvas image sequence engine (loads GSAP + ScrollTrigger)
+  Must be loaded AFTER the HTML above is parsed, so it's at the end.
+  ════════════════════════════════════════════════════════════════
+-->
+<script src="sequence.js?v=2"></script>
+
+<script>
+/* ════════════════════════════════════════════════════
+   ADDITIONAL PAGE-LEVEL JS
+════════════════════════════════════════════════════ */
+
+/* ── Cursor Glow ── */
+(function(){
+  const g=document.getElementById('cursor-glow');
+  let mx=-999,my=-999,gx=-999,gy=-999;
+  window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+  (function lerp(){gx+=(mx-gx)*.08;gy+=(my-gy)*.08;g.style.left=gx+'px';g.style.top=gy+'px';requestAnimationFrame(lerp);})();
+})();
+
+/* ── Hero counter ── */
+(function(){
+  const el=document.getElementById('hero-counter');
+  const target=1000,dur=2000,st=performance.now();
+  function tick(n){const p=Math.min((n-st)/dur,1);el.textContent=Math.round((1-Math.pow(1-p,4))*target);if(p<1)requestAnimationFrame(tick);}
+  requestAnimationFrame(tick);
+})();
+
+/* ── GSAP: 3-column cards stagger (the key animation the user requested) ── */
+gsap.fromTo('.sc-card',
+  { opacity: 0, y: 90 },
+  {
+    opacity: 1, y: 0,
+    stagger: 0.18,
+    ease: 'power3.out',
+    duration: 0.95,
+    scrollTrigger: {
+      trigger: '.cards-grid',
+      start: 'top 80%',
+      end: 'top 30%',
+      toggleActions: 'play none none reset',
+    },
+  }
+);
+
+/* ── GSAP: pipeline steps slide from left ── */
+gsap.from('.pipe-step', {
+  opacity: 0, x: -60, stagger: 0.18,
+  ease: 'power3.out', duration: 0.9,
+  scrollTrigger: {
+    trigger: '#pipeline', start: 'top 80%',
+    toggleActions: 'play none none reset',
+  },
+});
+
+/* ── GSAP: cards title ── */
+gsap.from('#cards-title',{
+  opacity:0,y:50,ease:'power3.out',duration:.9,
+  scrollTrigger:{trigger:'#cards-title',start:'top 85%',toggleActions:'play none none reset'},
+});
+
+/* ── GSAP: metrics bar items ── */
+gsap.from('.met-item',{
+  opacity:0,y:40,stagger:.14,ease:'power3.out',duration:.9,
+  scrollTrigger:{trigger:'.metrics-bar',start:'top 85%',toggleActions:'play none none reset'},
+});
+
+/* ── GSAP: stack pods ── */
+gsap.from('.stack-pod',{
+  opacity:0,y:40,stagger:.1,ease:'power3.out',duration:.9,
+  scrollTrigger:{trigger:'.stack-grid',start:'top 80%',toggleActions:'play none none reset'},
+});
+
+/* ── GSAP: footer ── */
+gsap.from('.foot-inner',{
+  opacity:0,y:40,ease:'power3.out',duration:1,
+  scrollTrigger:{trigger:'.foot-inner',start:'top 90%',toggleActions:'play none none reset'},
+});
+
+/* ── Type reveals (section titles) ── */
+document.querySelectorAll('.type-reveal').forEach((el,i)=>{
+  gsap.from(el.querySelector('.inner')||el,{
+    y:'110%', ease:'power3.out', duration:1,
+    scrollTrigger:{trigger:el,start:'top 88%',toggleActions:'play none none reset'},
+    delay: i * 0.08,
+  });
+});
+
+/* ── Generic reveal-up / reveal-fade ── */
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');revObs.unobserve(e.target);}});
+},{threshold:.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal-up,.reveal-fade').forEach(el=>revObs.observe(el));
+
+/* ── Metrics counters ── */
+const cObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){animCount(e.target);cObs.unobserve(e.target);}});
+},{threshold:.4});
+function animCount(el){
+  const target=parseInt(el.dataset.target,10),suffix=el.dataset.suffix||'';
+  const dur=2000,st=performance.now();
+  (function tick(n){const p=Math.min((n-st)/dur,1);el.textContent=Math.round((1-Math.pow(1-p,4))*target)+suffix;if(p<1)requestAnimationFrame(tick);})(performance.now());
+}
+document.querySelectorAll('.counter').forEach(el=>cObs.observe(el));
+
+/* ═══════════════════════════════
+   VERIFY TOOL LOGIC
+═══════════════════════════════ */
+const langMap={hi:'HINDI [HI]',or:'ODIA [OR]',en:'ENGLISH [EN]'};
+document.getElementById('claim-input').addEventListener('input',function(){
+  const lang=/[\u0900-\u097F]/.test(this.value)?'hi':/[\u0B00-\u0B7F]/.test(this.value)?'or':'en';
+  document.getElementById('lang-display').textContent=langMap[lang];
+});
+const demoData=[
+  {claim:'Drinking hot water cures diseases',verdict:'FALSE',confidence:.95,source:'WHO — Hot water has not been proven to cure diseases. (who.int)'},
+  {claim:'COVID-19 vaccines approved by regulatory bodies',verdict:'TRUE',confidence:.98,source:'WHO — mRNA vaccines passed all clinical trial phases. (who.int)'},
+  {claim:'Eating onions prevents virus infection',verdict:'MISLEADING',confidence:.79,source:'ICMR — Onions have properties but cannot prevent viral infection. (icmr.gov.in)'},
+];
+const stepEls=[
+  {el:document.getElementById('step-1'),label:'[ LANGUAGE DETECTION     ]',dur:600},
+  {el:document.getElementById('step-2'),label:'[ CLAIM OPTIMIZATION     ]',dur:900},
+  {el:document.getElementById('step-3'),label:'[ VECTOR SEARCH          ]',dur:1000},
+  {el:document.getElementById('step-4'),label:'[ VERIFICATION ENGINE    ]',dur:800},
+];
+document.getElementById('verify-btn').addEventListener('click',async function(){
+  const txt=document.getElementById('claim-input').value.trim();
+  if(!txt){document.getElementById('claim-input').style.borderColor='#FC4402';setTimeout(()=>document.getElementById('claim-input').style.borderColor='',800);return;}
+  document.getElementById('result-panel').style.display='none';
+  document.getElementById('loading-panel').style.display='block';
+  stepEls.forEach(s=>{s.el.className='load-step';s.el.textContent=s.label+' ░░░░░░░░░░';});
+  this.disabled=true;this.textContent='PROCESSING…';
+  for(const s of stepEls){
+    s.el.classList.add('active');let f='';
+    const t=setInterval(()=>{f+='█';s.el.textContent=s.label+' '+f.padEnd(10,'░');},s.dur/10);
+    await new Promise(r=>setTimeout(r,s.dur));
+    clearInterval(t);s.el.textContent=s.label+' ██████████ ✓';
+    s.el.classList.remove('active');s.el.classList.add('done');
+  }
+  const d=demoData[Math.floor(Math.random()*demoData.length)];
+  document.getElementById('extracted-claim').textContent=d.claim;
+  document.getElementById('source-ref').textContent=d.source;
+  const b=document.getElementById('verdict-badge');b.textContent=d.verdict;b.className='verdict-badge '+d.verdict;
+  const pct=Math.round(d.confidence*100);
+  document.getElementById('conf-label').textContent='CONFIDENCE: '+pct+'%';
+  setTimeout(()=>{document.getElementById('conf-bar').style.width=pct+'%';},100);
+  document.getElementById('loading-panel').style.display='none';
+  document.getElementById('result-panel').style.display='block';
+  document.getElementById('result-panel').scrollIntoView({behavior:'smooth',block:'center'});
+  this.disabled=false;this.textContent='CHECK FACTS ›';
+});
+/* ── GSAP: Compute Cards & Waitlist Form ── */
+gsap.from('.compute-card',{
+  opacity:0,y:40,stagger:.15,ease:'power3.out',duration:0.9,
+  scrollTrigger:{trigger:'.compute-grid',start:'top 80%',toggleActions:'play none none reset'}
+});
+
+gsap.from('#waitlist-form',{
+  opacity:0,y:30,ease:'power3.out',duration:0.9,
+  scrollTrigger:{trigger:'#waitlist-form',start:'top 85%',toggleActions:'play none none reset'}
+});
+
+/* ── WAITLIST FETCH API ── */
+document.getElementById('waitlist-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = this.querySelector('.form-btn');
+  const status = document.getElementById('form-status');
+  const name = document.getElementById('nl-name').value.trim();
+  const email = document.getElementById('nl-email').value.trim();
+  const company = document.getElementById('nl-company').value.trim();
+  
+  if (!name || !email) return;
+
+  btn.disabled = true;
+  btn.textContent = 'TRANSMITTING...';
+  
+  try {
+    const res = await fetch('http://localhost:3000/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, company })
+    });
+    const data = await res.json();
+    
+    status.style.display = 'block';
+    if(data.success) {
+      status.style.color = 'var(--neon-green)';
+      status.textContent = '> Terminal: Access Granted.';
+      btn.textContent = 'ACCESS GRANTED [ OK ]';
+    } else {
+      status.style.color = 'var(--red)';
+      status.textContent = '> Error: ' + data.error;
+      btn.textContent = 'REQUEST FAILED';
+      btn.disabled = false;
+    }
+  } catch (err) {
+    status.style.display = 'block';
+    status.style.color = 'var(--red)';
+    status.textContent = '> System Error: Connection Refused. Is the backend online?';
+    btn.textContent = 'RETRY CONNECTION';
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

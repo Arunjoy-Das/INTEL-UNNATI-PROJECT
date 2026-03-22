@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>FactGuard — Generate Placeholder Frames</title>
+  <style>
+    body { background:#020100; color:#FFFDBB; font-family:'Space Mono',monospace; padding:2rem; }
+    h1   { font-size:1.2rem; letter-spacing:.2em; margin-bottom:1rem; color:#2FF4DD; }
+    p    { font-size:.78rem; color:rgba(255,253,187,.6); margin-bottom:1rem; line-height:1.7; }
+    #progress-bar { height:4px; background:rgba(255,253,187,.1); width:300px; margin:1rem 0; }
+    #progress-fill { height:100%; background:#2FF4DD; width:0%; transition:width .1s; }
+    #status  { font-size:.72rem; color:#2FF4DD; margin-bottom:1rem; letter-spacing:.1em; }
+    button   { background:#FFFDBB; color:#020100; font-family:'Space Mono',monospace; font-weight:700; font-size:.76rem; letter-spacing:.12em; padding:.8rem 1.6rem; border:none; cursor:pointer; text-transform:uppercase; }
+    button:hover { background:#2FF4DD; }
+    button:disabled { opacity:.5; cursor:default; }
+    .warn { color:#FC4402; font-size:.7rem; border:1px solid rgba(252,68,2,.3); padding:.5rem 1rem; margin-top:1rem; line-height:1.6; }
+  </style>
+</head>
+<body>
+  <h1>PLACEHOLDER FRAME GENERATOR</h1>
+  <p>
+    This tool generates <strong>100 placeholder JPEG frames</strong> directly in your browser.<br>
+    Download them and place them in <code>ui-design/assets/frames/</code> to test the scroll-sequence animation.<br><br>
+    ⚠ This downloads 100 individual .jpg files — your browser may ask for permission.
+  </p>
+
+  <button id="gen-btn">GENERATE 100 FRAMES</button>
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+  <div id="status">READY</div>
+
+  <div class="warn">
+    💡 TIP: Alternatively, just open <code>index.html</code> directly — the canvas engine has a built-in
+    procedural placeholder mode and works without any image files.
+    Use this generator only if you want actual .jpg files in the folder.
+  </div>
+
+  <canvas id="gen-canvas" style="display:none"></canvas>
+
+  <script>
+  const TOTAL = 100;
+  const W = 1920, H = 1080;
+  const canvas = document.getElementById('gen-canvas');
+  const ctx    = canvas.getContext('2d');
+  canvas.width = W; canvas.height = H;
+
+  document.getElementById('gen-btn').addEventListener('click', async function() {
+    this.disabled = true;
+    const fill   = document.getElementById('progress-fill');
+    const status = document.getElementById('status');
+
+    for (let i = 1; i <= TOTAL; i++) {
+      const t = (i - 1) / (TOTAL - 1);
+      drawFrame(i, t);
+
+      // Convert to JPEG blob and trigger download
+      await new Promise(res => {
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const a   = document.createElement('a');
+          a.href    = url;
+          a.download = String(i).padStart(3,'0') + '.jpg';
+          a.click();
+          URL.revokeObjectURL(url);
+          res();
+        }, 'image/jpeg', 0.88);
+      });
+
+      fill.style.width   = ((i/TOTAL)*100) + '%';
+      status.textContent = `GENERATED FRAME ${String(i).padStart(3,'0')} / ${TOTAL}`;
+
+      // Small pause to avoid browser tab freeze
+      if (i % 5 === 0) await new Promise(r => setTimeout(r, 50));
+    }
+    status.textContent = '✅ ALL 100 FRAMES GENERATED. Move them to assets/frames/';
+    this.disabled = false;
+  });
+
+  function drawFrame(num, t) {
+    // Sky gradient: teal → deep purple
+    const r1 = Math.round(2 + t*26), g1 = Math.round(20 + t*5), b1 = Math.round(40+t*50);
+    const r2 = Math.round(10+t*50), g2 = Math.round(80-t*70), b2 = Math.round(80+t*80);
+    const grad = ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0,  `rgb(${r1},${g1},${b1})`);
+    grad.addColorStop(1,  `rgb(${r2},${g2},${b2})`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,W,H);
+
+    // Grid
+    ctx.strokeStyle='rgba(255,253,187,0.06)'; ctx.lineWidth=1;
+    for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+    // Glow orb
+    const ox=W*(0.75-t*0.45), oy=H*0.42;
+    const ar=Math.round(47+t*108), ag=Math.round(244-t*214), ab=Math.round(221+t*8);
+    const orb=ctx.createRadialGradient(ox,oy,0,ox,oy,H*0.55);
+    orb.addColorStop(0,`rgba(${ar},${ag},${ab},0.38)`); orb.addColorStop(1,'transparent');
+    ctx.fillStyle=orb; ctx.fillRect(0,0,W,H);
+
+    // City silhouette
+    ctx.fillStyle='rgba(2,1,0,0.68)';
+    for(let c=0;c<22;c++){
+      const bx=(c/22)*W, bw=(W/22)*0.7;
+      const bh=80+Math.sin(c*2.1+t*Math.PI*2)*180+100;
+      ctx.fillRect(bx,H-bh,bw,bh);
+    }
+
+    // Frame label
+    ctx.fillStyle='rgba(255,253,187,0.2)'; ctx.font='bold 56px monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(`FRAME ${String(num).padStart(3,'0')} / ${TOTAL}`, W/2, H/2);
+
+    // Scan line at bottom
+    ctx.fillStyle=`rgba(${ar},${ag},${ab},0.5)`;
+    ctx.fillRect(0,H-5,W*t,5);
+  }
+  </script>
+</body>
+</html>

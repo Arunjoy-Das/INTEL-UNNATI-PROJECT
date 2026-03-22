@@ -1,0 +1,26 @@
+[
+  {
+    "id": "truth-001",
+    "text": "Drinking hot water does not cure viral respiratory infections or kill the virus.",
+    "source": "World Health Organization (WHO)",
+    "url": "https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public/myth-busters"
+  },
+  {
+    "id": "truth-002",
+    "text": "Saltwater gargling is a common home remedy but does not prevent COVID-19 infection.",
+    "source": "Ministry of Health and Family Welfare (India)",
+    "url": "https://www.mohfw.gov.in/"
+  },
+  {
+    "id": "truth-003",
+    "text": "Lemon juice alone does not treat or cure chronic health conditions but provides Vitamin C support.",
+    "source": "FactGuard Verified Index",
+    "url": "https://factguard.ai"
+  },
+  {
+    "id": "truth-004",
+    "text": "Vaccines are rigorously tested and have been proven safe for general populations by multiple health agencies.",
+    "source": "Centers for Disease Control and Prevention (CDC)",
+    "url": "https://www.cdc.gov/vaccines/safety/index.html"
+  }
+]
