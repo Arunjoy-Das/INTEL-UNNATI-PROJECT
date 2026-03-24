@@ -128,8 +128,10 @@ export default function VerifyTool() {
               <div className="flex flex-col items-center justify-center text-center">
                 <div className={`text-4xl font-bold tracking-tighter mb-2 ${
                   result.verdict === 'TRUE' ? 'text-green' : 
+                  result.verdict === 'LIKELY TRUE' ? 'text-green' : 
                   result.verdict === 'FALSE' ? 'text-red' : 
-                  result.verdict === 'MISLEADING' ? 'text-amber-500' : 'text-cream/40'
+                  result.verdict === 'MISLEADING' ? 'text-amber-500' : 
+                  result.verdict === 'UNVERIFIED' ? 'text-amber-500' : 'text-cream/40'
                 }`}>{result.verdict}</div>
                 <div className="w-full h-1 bg-cream/10 relative overflow-hidden mt-2">
                     <div className="absolute left-0 top-0 h-full bg-cyan transition-all" style={{ width: `${result.confidence_score * 100}%` }}></div>
