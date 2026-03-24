@@ -7,7 +7,7 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_URL=http://localhost:8000
+      - VITE_API_URL=https://intel-unnati-project.onrender.com
     depends_on:
       - api
 
