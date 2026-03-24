@@ -5,7 +5,7 @@ import { useGSAP } from '@gsap/react';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL || "https://intel-unnati-project.onrender.com";
 
 export default function WaitlistForm() {
   const [status, setStatus] = useState({ state: 'idle', message: '' }); // idle | transmitting | success | error

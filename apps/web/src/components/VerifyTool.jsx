@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL || "https://intel-unnati-project.onrender.com";
 
 export default function VerifyTool() {
   const [text, setText] = useState('');
