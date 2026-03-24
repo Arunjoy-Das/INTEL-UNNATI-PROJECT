@@ -54,6 +54,5 @@ class SearchTools:
 
 search_tool = SearchTools()
 
-def get_verification_service():
-    from src.services.verification_service import service
-    return service
+def get_search_tool():
+    return search_tool
