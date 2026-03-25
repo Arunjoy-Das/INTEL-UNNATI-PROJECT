@@ -1,3 +1,11 @@
+import { motion } from 'framer-motion';
+
+const fadeUp = {
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-50px" }
+};
+
 export default function HowItWorks() {
   const steps = [
     {
@@ -27,28 +35,36 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="py-32 px-8 border-t border-cream/10 bg-[#0b0c10]" id="pipeline">
+    <section className="px-8 border-t border-[#e0e1e3]/8" id="pipeline"
+             style={{ background: 'linear-gradient(180deg, #0a0e14 0%, #0b0c10 100%)' }}>
        <div className="max-w-[1240px] mx-auto">
-          <div className="inline-block px-3 py-1 border border-cyan/30 text-cyan text-[0.6rem] tracking-[0.35em] uppercase bg-cyan/5 mb-6">
-             PIPELINE STACK
-          </div>
-          <h2 className="text-[clamp(3rem,6vw,5.5rem)] font-display text-cream leading-none uppercase mb-20">
-             HOW IT <span className="text-cyan">WORKS</span>
-          </h2>
+          <motion.div {...fadeUp} transition={{ duration: 0.8 }}>
+            <div className="inline-block px-4 py-2 glass-card text-cyan text-[0.8rem] tracking-[0.35em] uppercase mb-8 rounded-sm">
+               PIPELINE STACK
+            </div>
+            <h2 className="text-[clamp(3rem,6vw,5.5rem)] font-display text-[#e0e1e3] leading-none uppercase mb-24">
+               HOW IT <span className="text-cyan">WORKS</span>
+            </h2>
+          </motion.div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
              {steps.map((s, i) => (
-                <div key={i} className="group relative pt-12 border-t border-cream/10 hover:border-cyan/50 transition-colors">
-                   <div className={`absolute top-0 left-0 -translate-y-1/2 font-display text-4xl ${s.accent} opacity-50 group-hover:opacity-100 transition-opacity`}>
+                <motion.div 
+                  key={i}
+                  {...fadeUp}
+                  transition={{ duration: 0.8, ease: "easeOut", delay: i * 0.15 }}
+                  className="group relative pt-14 border-t border-[#e0e1e3]/8 hover:border-cyan/40 transition-all duration-500"
+                >
+                   <div className={`absolute top-0 left-0 -translate-y-1/2 font-display text-5xl ${s.accent} opacity-30 group-hover:opacity-100 transition-opacity duration-500`}>
                       {s.num}
                    </div>
-                   <h3 className="text-xs font-bold tracking-[0.2em] uppercase mb-4 text-cream/80 group-hover:text-cyan">
+                   <h3 className="text-sm font-bold tracking-[0.2em] uppercase mb-5 text-[#e0e1e3]/70 group-hover:text-cyan transition-colors duration-300">
                       {s.title}
                    </h3>
-                   <p className="text-cream/50 font-mono text-[0.75rem] leading-relaxed">
+                   <p className="text-[#e0e1e3]/40 font-mono text-[0.9rem] leading-relaxed">
                       {s.text}
                    </p>
-                </div>
+                </motion.div>
              ))}
           </div>
        </div>

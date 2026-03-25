@@ -1,21 +1,27 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════
-   FACTGUARD – Cyber-Industrial Design System
+   FACTGUARD – Cinematic Premium Design System v2
 ═══════════════════════════════════════════════════ */
 
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500&display=swap');
+
 :root {
-  --black:      #0b0c10;
-  --dark-gray:  #1f2833;
-  --cream:      #c5c6c7;
-  --cream-dim:  rgba(197, 198, 199, 0.6);
-  --cream-line: rgba(69, 162, 158, 0.2);
+  --black:      #0a0a0a;
+  --black-deep: #111;
+  --dark-gray:  #1a1d24;
+  --cream:      #e0e1e3;
+  --cream-dim:  rgba(224, 225, 227, 0.5);
+  --cream-mute: rgba(224, 225, 227, 0.35);
+  --cream-line: rgba(69, 162, 158, 0.15);
   --cyan:       #66fcf1;
+  --cyan-glow:  rgba(102, 252, 241, 0.15);
   --red:        #ff003c;
   --green:      #45a29e;
   --neon-green: #39ff14;
   --neon-purple:#b202fc;
   --font-mono:  'Space Mono', 'Share Tech Mono', 'Courier New', monospace;
+  --font-body:  'Inter', system-ui, sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,12 +29,70 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--black);
+  background: linear-gradient(180deg, var(--black) 0%, var(--black-deep) 100%);
   color: var(--cream);
   font-family: var(--font-mono);
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: 15px;
+  line-height: 1.75;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── CINEMATIC TYPOGRAPHY ── */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 300;
+  letter-spacing: 0.08em;
+}
+
+h1 { letter-spacing: 0.12em; }
+h2 { letter-spacing: 0.1em; }
+h3 { letter-spacing: 0.06em; }
+
+/* ── SPATIAL BREATHING ROOM ── */
+section {
+  padding-top: clamp(80px, 8vw, 120px);
+  padding-bottom: clamp(80px, 8vw, 120px);
+}
+
+/* ── GLASSMORPHISM CLASSES ── */
+.glass {
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-card {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(102, 252, 241, 0.2);
+  box-shadow: 0 8px 32px rgba(102, 252, 241, 0.06);
+}
+
+/* ── BUTTON MICRO-INTERACTIONS ── */
+.btn-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-hover:hover {
+  transform: scale(1.05);
+}
+
+.btn-hover:active {
+  transform: scale(0.98);
+}
+
+/* ── LINK HOVER EFFECTS ── */
+a {
+  transition: color 0.3s ease, opacity 0.3s ease;
 }
 
 /* ── MARQUEE ANIMATION ── */
@@ -40,7 +104,7 @@ body {
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marqueeScroll 22s linear infinite;
+  animation: marqueeScroll 26s linear infinite;
 }
 
 /* ── GLITCH ANIMATION ── */
@@ -55,18 +119,41 @@ body {
   animation: glitch 6s infinite;
 }
 
-/* ── UTILITIES ── */
-.font-display { font-family: 'Bebas Neue', sans-serif; }
-.font-mono { font-family: var(--font-mono); }
-
-/* ── REVEAL ANIMATIONS ── */
-.reveal-up {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+/* ── SUBTLE AMBIENT GLOW ── */
+@keyframes ambientPulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.7; }
 }
 
-.reveal-up.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+.ambient-glow {
+  animation: ambientPulse 4s ease-in-out infinite;
+}
+
+/* ── FONT CLASSES ── */
+.font-display { font-family: 'Bebas Neue', sans-serif; font-weight: 400; }
+.font-mono    { font-family: var(--font-mono); }
+.font-body    { font-family: var(--font-body); font-weight: 300; }
+
+/* ── CUSTOM SCROLLBAR ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(102, 252, 241, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 252, 241, 0.4);
+}
+
+/* ── SELECTION ── */
+::selection {
+  background: var(--cyan);
+  color: var(--black);
 }
