@@ -87,12 +87,12 @@ export default function VerifyTool() {
         <div className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-cyan -translate-x-1 -translate-y-1 group-hover:scale-125 transition-transform duration-500"></div>
         <div className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-cyan translate-x-1 translate-y-1 group-hover:scale-125 transition-transform duration-500"></div>
 
-        <label className="block text-cyan text-[0.85rem] tracking-[0.25em] font-mono mb-5 uppercase">
+        <label className="block text-cyan text-base tracking-[0.25em] font-mono mb-6 uppercase">
           PASTE NEWS / SOCIAL POST / CLAIM
         </label>
         
         <textarea
-          className="w-full bg-transparent border border-[#e0e1e3]/15 font-mono text-[#e0e1e3] p-6 text-lg min-h-[220px] outline-none focus:border-cyan/60 focus:shadow-[0_0_20px_rgba(102,252,241,0.08)] transition-all placeholder-[#e0e1e3]/15 mb-8 leading-relaxed rounded-sm"
+          className="w-full bg-transparent border border-[#e0e1e3]/15 font-mono text-[#e0e1e3] p-8 text-xl min-h-[260px] outline-none focus:border-cyan/60 focus:shadow-[0_0_30px_rgba(102,252,241,0.1)] transition-all placeholder-[#e0e1e3]/15 mb-8 leading-relaxed rounded-sm"
           placeholder="e.g. Breaking! Drinking hot water cures all diseases..."
           value={text}
           onChange={handleInput}
@@ -108,7 +108,7 @@ export default function VerifyTool() {
           <button 
             onClick={handleVerify}
             disabled={loading || !text.trim()}
-            className="btn-hover w-full md:w-auto bg-[#66fcf1] text-[#0a0a0a] px-14 py-6 font-bold tracking-[0.2em] hover:shadow-[0_0_50px_rgba(102,252,241,0.5)] transition-all disabled:opacity-30 disabled:cursor-not-allowed uppercase text-sm border-none cursor-pointer rounded-sm"
+            className="btn-hover w-full md:w-auto bg-[#66fcf1] text-[#0a0a0a] px-16 py-7 font-bold tracking-[0.25em] hover:shadow-[0_0_50px_rgba(102,252,241,0.5)] transition-all disabled:opacity-30 disabled:cursor-not-allowed uppercase text-base border-none cursor-pointer rounded-sm"
           >
             {loading ? 'PROCESSING...' : 'CHECK FACTS >>'}
           </button>
@@ -161,9 +161,9 @@ export default function VerifyTool() {
               <div className="space-y-4">
                  <span className="text-[0.8rem] text-[#e0e1e3]/35 tracking-widest block uppercase mb-2">SOURCE REFERENCE</span>
                  {result.sources.map((s, idx) => (
-                    <div key={idx} className="text-[0.85rem] glass-card p-4 leading-relaxed rounded-sm">
-                        <p className="mb-3 text-[#e0e1e3]/60">{s.text}</p>
-                        <a href={s.url} target="_blank" className="text-cyan underline uppercase font-bold text-[0.8rem] tracking-wider hover:text-[#e0e1e3]">{s.source}</a>
+                     <div key={idx} className="text-base glass-card p-6 leading-relaxed rounded-sm">
+                        <p className="mb-4 text-[#e0e1e3]/70">{s.text}</p>
+                        <a href={s.url} target="_blank" className="text-cyan underline uppercase font-bold text-sm tracking-widest hover:text-[#e0e1e3]/90">{s.source}</a>
                     </div>
                  ))}
               </div>

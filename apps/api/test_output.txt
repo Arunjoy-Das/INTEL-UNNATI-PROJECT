@@ -1,0 +1,170 @@
+
+============================================================
+[VERIFY] CLAIM: Bill Gates is going to become next PM of India
+============================================================
+[INFO] Extraordinary: True
+[INFO] Entities: ['Gates', 'India', 'Bill Gates']
+[INFO] Counter-query: Who is the next pm of india
+[SEARCH] Querying: Bill Gates is going to become next PM of India
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: Bill Gates is going to become next PM of India fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: Who is the next pm of india
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiowFBVV95cUxOTnhFZkpYY3EyN1NEV3h4QlF4T1hwR2had3p1eWkxLW4wNXR4bmZlUVZxMzVQT0YyRFNuRUtKRGJkODVUc1lmbmRiZU1vMkRtUUkwNEh0WEFndWNQWElIYzhjY3VVTnpkbmxQZE5pV0EwTUVMcnF1bk1WdE5TbzU4OXVrOFFmeThOVFFqaW9BcnBBb3VaUFpBMERua1Y2Slo3amlj0gGoAUFVX3lxTE16bWprOVVIZGp2cVdNRXJXSWtNVjZEVVJwOFRCdEwyVWk1Qno4MUluTng2dGNBLUVhQjR3bUszb0txZGU4b0U3SUFVM3hYWlA1Q2VZS2NSQVlvRko0Yy1NcDA1LTVLUkd3VjVBbXpLMEpOWFhaazRSNllMQjNxd1FYa2VwY1RCdGo4RnVDY2taNmtDenZtaU1TVF9DVjBlRGJpZUFkcWZVag?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMirwFBVV95cUxQVWxLaWxkd0ZWODl4Z3pBbVYzeDQ3eUNIZFpkSGtXX3UwdW5hQk9IaGYzbnljQjdfLS1CN0VuRmVzdFduWk9LOHZmZVBfOFp5UWtOLWVUekdPc05BMFNvRGFpdm1nWTRDdDFCdzVCSm1wZmdzNC1BTlAtVkVyRWQ3anlKbXUzcVJmZThfZERWZ0p0ZGZOUXNhUkFZWXlMR1RzbTFmTktLSEJTek9DZzhj0gG0AUFVX3lxTFBnRGp5S21NSW54S3poeGxEWkNmSFJSQVhMVkcxNGtWWV8wWFlQbmpUWGNYaFZxR3BJY1VSRWJkTzg3Vkc5RmpPS2wtdjgyTVZRcFA5cDg3ajNmZnpGNzZVOXBzVkVWZi1YZ1VIa0JzbUFkY1N5ZzNEZ2pMT0huYUloeXEzend5ek5BaUl4akVXX0RHMU4wdnJDMy1WcEZ0SGZNUlNTOGpZQ0NIbk9RcFB3QjdpQQ?oc=5
+[WIKI] Gates: Gates is the plural of gate, a point of entry to a space which is enclosed by walls. It may also refer to:...
+[WIKI] India: India, officially the Republic of India, is a country in South Asia. It is the seventh-largest country by area; the most...
+[EXTRA] +8 debunk penalty (extraordinary, no direct confirmation)
+
+[SCORES] Debunk: 11.0 | Confirm: 0.0
+[FLAGS]  Direct: False | Contradiction: False | Inversion: False
+
+[VERDICT] FALSE — Confidence: 95%
+============================================================
+
+
+*** FINAL: Bill Gates is going to become next PM of India
+*** VERDICT: FALSE (0.95)
+*** Sources: 6
+---
+
+============================================================
+[VERIFY] CLAIM: Water boils at 100 degrees Celsius
+============================================================
+[KNOWN TRUE] Matched established facts database: Water boils at 100°C (212°F) at standard atmospheric pressure
+[INFO] Extraordinary: False
+[INFO] Entities: ['Celsius']
+[INFO] Counter-query: At what temperature does water boils
+[SEARCH] Querying: Water boils at 100 degrees Celsius
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: Water boils at 100 degrees Celsius fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: At what temperature does water boils
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMid0FVX3lxTFBIRWVxZGxiU2NieHN4SHlPSWdfQVRybnFUdi1JN2hzcEJKS3BVX3V0NE1wOWdNRjFyYUhMbGc4YVdLOS1YRjdhUWZmYlN1MUdPWWxQVG9YcDh5bTQyeGVQend2d0Vpa1RqVzlGLXFkU0RlZ3BEZTdR?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMickFVX3lxTFBvQzE0Tzd2TGNpSUtrWl9QNXVNbFNFU00tM1hVbGhGZGs0b1RzRnBySnBBVDREYWNnMnNySXhIOThXY3VmeGRVX2lyOGVuSFRWOUJSRWlVSEtpRTdtd0RramgwdHE2R3p6MkxwNXEyZDIxdw?oc=5
+[WIKI] Celsius: The degree Celsius is the unit of temperature on the Celsius temperature scale, one of two temperature scales used in th...
+[WIKI] Low coverage (25%) — topic not well-supported
+
+[SCORES] Debunk: 3.0 | Confirm: 20.0
+[FLAGS]  Direct: True | Contradiction: False | Inversion: False
+
+[VERDICT] TRUE — Confidence: 94%
+============================================================
+
+
+*** FINAL: Water boils at 100 degrees Celsius
+*** VERDICT: TRUE (0.94)
+*** Sources: 6
+---
+
+============================================================
+[VERIFY] CLAIM: The sun revolves around the Earth
+============================================================
+[KNOWN FALSE] Matched misconception database: The Earth revolves around the Sun, not vice versa
+[INFO] Extraordinary: False
+[INFO] Entities: ['Earth']
+[INFO] Counter-query: What revolves around what the sun or the earth
+[SEARCH] Querying: The sun revolves around the Earth
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: The sun revolves around the Earth fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: What revolves around what the sun or the earth
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiekFVX3lxTFBLVU4zdWJvQWtNNWJ5a3RCNWl3eDA3ZHRNTlpCS0pDRGdFeWJhajVqNWJnT1d4MFB2QVg5SkxmYS1UQ3pvcVgwY1BjLWgzRzdrX1VfTm1WbklIb1FfamwtUjJiWWtPSWx2anlXN2tUMENHdFBwdXRBLUNR?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiogFBVV95cUxQNnB0dTFRV3JiT3I4anFrVVhXTC1JNDlsdVdUdTZ6R2JJUzRhWUNaU3p1T2ljellCZkptNTZkRmRaZ3A1Z0VjZDIwb25rTFVleU9zYXVncFcwOVRnVkRFb0d6WldtZlQ0cWd2TWFOZVYzM012UC1ORGJzME9VVkxXblo3YTNMSE5MbGN2a0Q3bFFHMkRhYW1mNTNPNHM2Mm1Yb2fSAacBQVVfeXFMT0VNNmlzd21DSnc0S29oLWw4OUh2Z3BpVmZHdm5KbFNBaUxqOVBXTTYwUnJoXzVWVklrRGwwMDZJQkdjTTlBNHlXNTRiYWdQYkgzaEhKbEI0UHBSSG9UdEY5cWFTV1FWTmpUSEY5V2I2UTBrM2puMngtX211ZmF5ZlYyR0czNGkwX2gyekRYYUxuNWlYRDNuUFFsLXRsVmNDQlFUSnJQLWs?oc=5
+[WIKI] Earth: Earth is the third planet from the Sun and the only astronomical object known to harbor life. This is made possible by E...
+[INVERSION] Detected! Claim: sun→earth, Evidence: earth→sun
+[INVERSION] Detected! Claim: sun→earth, Evidence: earth→sun
+[INVERSION] Subject-object inversion detected → heavy debunk penalty
+[WIKI] Low coverage (33%) — topic not well-supported
+
+[SCORES] Debunk: 63.5 | Confirm: 0.0
+[FLAGS]  Direct: False | Contradiction: True | Inversion: True
+
+[VERDICT] FALSE — Confidence: 97%
+============================================================
+
+
+*** FINAL: The sun revolves around the Earth
+*** VERDICT: FALSE (0.97)
+*** Sources: 6
+---
+
+============================================================
+[VERIFY] CLAIM: Earth revolves around the Sun
+============================================================
+[KNOWN TRUE] Matched established facts database: Earth revolves around the Sun
+[INFO] Extraordinary: False
+[INFO] Entities: ['Sun']
+[INFO] Counter-query: What revolves around what earth or the sun
+[SEARCH] Querying: Earth revolves around the Sun
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: Earth revolves around the Sun fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: What revolves around what earth or the sun
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiekFVX3lxTFBLVU4zdWJvQWtNNWJ5a3RCNWl3eDA3ZHRNTlpCS0pDRGdFeWJhajVqNWJnT1d4MFB2QVg5SkxmYS1UQ3pvcVgwY1BjLWgzRzdrX1VfTm1WbklIb1FfamwtUjJiWWtPSWx2anlXN2tUMENHdFBwdXRBLUNR?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMilAFBVV95cUxNOXNoZmdzMjJ3NUlUQVpYSWt4QnRsWG1Na09UcS05Y1oyUUN6M0ZlREpBYmVWWGVUQWtWSHNDalN1bFVacHdSbkVGYUdUak11R0t2eUU0QlFNVndoSmE2cmFWWEhqbVk3a1pvMWN2M1RUa2VtUDRqNWNaaGtkZEJLUzlNamJMbHRVOU1YWTU0c1pyNUdP?oc=5
+[WIKI] Sun: The Sun is the star at the centre of the Solar System. It is a massive sphere of hot plasma, heated to incandescence by ...
+[INVERSION] Detected! Claim: earth→sun, Evidence: sun→earth
+[INVERSION] Detected but skipped (claim is in known-true database)
+[WIKI] Low coverage (33%) — topic not well-supported
+
+[SCORES] Debunk: 25.5 | Confirm: 22.5
+[FLAGS]  Direct: True | Contradiction: True | Inversion: True
+
+[VERDICT] TRUE — Confidence: 92%
+============================================================
+
+
+*** FINAL: Earth revolves around the Sun
+*** VERDICT: TRUE (0.92)
+*** Sources: 6
+---
+
+============================================================
+[VERIFY] CLAIM: COVID vaccines cause autism
+============================================================
+[KNOWN FALSE] Matched misconception database: Scientific consensus: vaccines do not cause autism
+[INFO] Extraordinary: False
+[INFO] Entities: ['COVID', 'vaccines', 'cause']
+[INFO] Counter-query: covid vaccines cause autism true or false
+[SEARCH] Querying: COVID vaccines cause autism
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: COVID vaccines cause autism fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: covid vaccines cause autism true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMilwFBVV95cUxPSmh5R3pma1ZHZmpHZFVBekVINUhTVmVvNHphcy0wTmFtaXV4ZnRLX3Y2YkMweFI0NFI0b0E4eDZhNS1fNTc1aVRKZDRQSXFtZlFudHlleDZrWV82Wmp1MnJPVFdsVUVEbGhGNHhWNVRWdXpTaWVOWVNwNzVaa04tYVFMbWptUjhBWE9kc0tPeFFya2xhVXZr?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMitgFBVV95cUxNNlllUFU4NlpoYThFeW9NUjN6MW1YYzlDRjJqSXVsUmFaLTZRVWo5el9ZLV9YR2hlR29yNEFKVENUX3ZiQTgtam45c25Ba2pRdDVidUlyZlBibjFUYnpVOXVsMXc3Z0tkR01XWE9tMXI3Q3ExQWpoTjViVjlwa1ctTGs1a04wdVJEM2NtYU5peFU2clBYMXdSUzdWZFBRWHVGNS1JUG1jV3dFY2d0Zll6VElUS0lmQQ?oc=5
+[WIKI] COVID: Coronavirus disease 2019 (COVID-19) is a contagious disease caused by the coronavirus SARS-CoV-2. Starting in January 20...
+[WIKI] vaccines: A vaccine is a biological preparation that provides active acquired immunity to a particular infectious or malignant dis...
+
+[SCORES] Debunk: 42.5 | Confirm: 2.0
+[FLAGS]  Direct: False | Contradiction: True | Inversion: False
+
+[VERDICT] FALSE — Confidence: 96%
+============================================================
+
+
+*** FINAL: COVID vaccines cause autism
+*** VERDICT: FALSE (0.96)
+*** Sources: 6
+---
