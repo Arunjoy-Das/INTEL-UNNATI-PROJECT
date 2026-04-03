@@ -1,11 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.core.config import settings
-from src.core.database import engine, Base
-from src.routers import waitlist, verify
-
-# Create tables in SQLite (only for demo, normally use migrations)
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -21,7 +16,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Safe database initialization — don't crash if DB is unavailable
+try:
+    from src.core.database import engine, Base
+    Base.metadata.create_all(bind=engine)
+    print("[STARTUP] Database tables created successfully.")
+except Exception as e:
+    print(f"[STARTUP WARNING] Database init failed: {e}")
+    print("[STARTUP WARNING] Verify endpoint will still work (stateless mode).")
+
 # Ingest Routers
+from src.routers import waitlist, verify
 app.include_router(waitlist.router, prefix="/api", tags=["waitlist"])
 app.include_router(verify.router, prefix="/api/v1", tags=["verification"])
 
@@ -29,10 +34,10 @@ app.include_router(verify.router, prefix="/api/v1", tags=["verification"])
 async def health_check():
     return {
         "status": "healthy",
+        "engine": "FactGuard Triangulation Engine v3",
         "services": {
-            "postgres": "up",
-            "redis": "up",
-            "vector_db": "up"
+            "verification": "up",
+            "search": "up"
         }
     }
 

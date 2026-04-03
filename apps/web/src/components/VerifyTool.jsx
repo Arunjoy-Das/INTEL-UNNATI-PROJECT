@@ -59,9 +59,8 @@ export default function VerifyTool() {
             body: JSON.stringify({ text })
         });
         const data = await res.json();
-        const resFinal = await fetch(`${API_URL}/api/v1/results/${data.request_id}`);
-        const finalData = await resFinal.json();
-        setResult(finalData.data);
+        // Results now come directly from /verify (stateless mode)
+        setResult(data.data);
     } catch (err) {
         console.error(err);
     } finally {
