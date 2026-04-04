@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
-const API_URL = import.meta.env.VITE_API_URL || "https://intel-unnati-project.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 const fadeUp = {
   initial: { opacity: 0, y: 40 },

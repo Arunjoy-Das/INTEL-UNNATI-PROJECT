@@ -10,7 +10,7 @@ app = FastAPI(
 # Standard CORS Middleware setup for Production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Should be restrictive in production
+    allow_origins=["*"], # Temporarily allow all for Vercel -> Render production testing
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
