@@ -4,6 +4,7 @@ pydantic[email]
 pydantic-settings
 sqlalchemy
 psycopg2-binary
+openai
 python-dotenv
 celery
 redis
