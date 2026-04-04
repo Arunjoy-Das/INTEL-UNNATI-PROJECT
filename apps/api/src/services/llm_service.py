@@ -28,7 +28,7 @@ class LLMService:
         evidence = evidence[:5000]
 
         prompt = f"""
-        Role: Expert Fact-Checker
+        Role: Ruthless Fact-Checker
         Task: Evaluate the truthfulness of a CLAIM based ONLY on the provided EVIDENCE snippets.
         
         CLAIM: "{claim}"
@@ -36,16 +36,18 @@ class LLMService:
         EVIDENCE:
         {evidence}
         
-        INSTRUCTIONS:
-        1. Analyze if the evidence directly confirms, refutes, or is insufficient for the claim.
-        2. Pay attention to specific dates, names, and quantities.
-        3. Identify if the evidence is debunking a rumor (e.g. "The claim that X is true is actually false").
+        STRICT INSTRUCTIONS:
+        1. You must strictly identify the SUBJECT of the claim.
+        2. If the claim states Person A died, but the sources state Person A is reacting to Person B's death, the claim is FALSE.
+        3. You must think step-by-step. Write out a 2-sentence logical deduction before reaching your final conclusion.
+        4. Do not be fooled by related keywords if the context (subject/object relationship) is different.
         
         OUTPUT FORMAT (JSON ONLY):
         {{
+            "logical_deduction": "Your 2-sentence step-by-step reasoning.",
             "verdict": "TRUE" | "FALSE" | "MISLEADING" | "UNVERIFIED",
             "confidence_score": 0.0 to 1.0,
-            "brief_reasoning": "One sentence explaining why."
+            "brief_reasoning": "Final one-sentence summary for the user interface."
         }}
         """
         import requests
@@ -75,14 +77,24 @@ class LLMService:
                 result_json = resp.json()["choices"][0]["message"]["content"]
                 # Try to clean up markdown if present
                 if "```json" in result_json:
-                    result_json = re.search(r"```json\s*(.*?)\s*```", result_json, re.DOTALL).group(1)
+                    match = re.search(r"```json\s*(.*?)\s*```", result_json, re.DOTALL)
+                    if match:
+                        result_json = match.group(1)
                 elif "```" in result_json:
-                    result_json = re.search(r"```\s*(.*?)\s*```", result_json, re.DOTALL).group(1)
-                return json.loads(result_json.strip())
+                    match = re.search(r"```\s*(.*?)\s*```", result_json, re.DOTALL)
+                    if match:
+                        result_json = match.group(1)
+                
+                parsed_result = json.loads(result_json.strip())
+                # Ensure compatibility with legacy field names if necessary
+                if "brief_reasoning" not in parsed_result and "logical_deduction" in parsed_result:
+                    parsed_result["brief_reasoning"] = parsed_result["logical_deduction"]
+                
+                return parsed_result
             else:
                 error_body = resp.text
                 print(f"[LLM ERROR] Status {resp.status_code}: {error_body}")
-                return {"verdict": "UNVERIFIED", "confidence_score": 0.2, "brief_reasoning": f"HTTP Error {resp.status_code}: {error_body[:100]}"}
+                return {"verdict": "UNVERIFIED", "confidence_score": 0.2, "brief_reasoning": f"HTTP Error {resp.status_code}"}
         except Exception as e:
             print(f"[LLM ERROR] {e}")
             return {
