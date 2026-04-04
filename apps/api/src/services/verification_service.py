@@ -21,7 +21,7 @@ class VerificationService:
             "no evidence", "no proof", "there is no", "refuted", "denied",
             "satire", "parody", "unsubstantiated", "no credible",
             "widely debunked", "has been debunked", "common misconception",
-            "geocentric", "flat earth", "pseudoscience"
+            "geocentric", "flat earth", "pseudoscience", "fact check", "fact-check"
         ]
 
         self.confirm_markers = [
@@ -68,6 +68,22 @@ class VerificationService:
             (r'moon\b.*\borbits?\b.*\bearth', "The Moon orbits the Earth"),
             (r'water\b.*\bh2o\b', "Water is H2O"),
             (r'dna\b.*\bdouble\s+helix', "DNA has a double helix structure"),
+            # Geography & Demographics
+            (r'india\b.*\b(?:most\s+populous|largest\s+population|most\s+populated)', "India surpassed China as the most populous country in 2023"),
+            (r'(?:mount\s+)?everest\b.*\b(?:tallest|highest)\b.*\b(?:mountain|peak)', "Mount Everest is the highest mountain above sea level at 8,849m"),
+            (r'(?:pacific|pacific\s+ocean)\b.*\b(?:largest|biggest)\b.*\bocean', "The Pacific Ocean is the largest ocean"),
+            (r'sahara\b.*\b(?:largest|biggest)\b.*\bdesert', "The Sahara is one of the largest deserts"),
+            (r'amazon\b.*\b(?:largest|biggest)\b.*\b(?:rainforest|forest)', "The Amazon is the largest tropical rainforest"),
+            (r'nile\b.*\b(?:longest)\b.*\b(?:river)', "The Nile is one of the longest rivers in the world"),
+            # Capitals & Countries
+            (r'(?:new\s+)?delhi\b.*\bcapital\b.*\bindia', "New Delhi is the capital of India"),
+            (r'tokyo\b.*\bcapital\b.*\bjapan', "Tokyo is the capital of Japan"),
+            (r'washington\b.*\bcapital\b.*\b(?:united\s+states|usa|america)', "Washington D.C. is the capital of the USA"),
+            # Science
+            (r'(?:gravity|gravitational)\b.*\b(?:9\.8|9\.81)\b', "Gravitational acceleration is approximately 9.81 m/s²"),
+            (r'(?:sun|solar)\b.*\bstar\b', "The Sun is a star"),
+            (r'diamond\b.*\b(?:carbon|hardest)', "Diamond is made of carbon and is the hardest natural material"),
+            (r'human\s+body\b.*\b(?:60|70)\s*%?\s*water', "The human body is approximately 60% water"),
         ]
 
     # ------------------------------------------------------------------ #
@@ -133,8 +149,10 @@ class VerificationService:
                       'when', 'what', 'where', 'would', 'could', 'should',
                       'also', 'than', 'then', 'some', 'more', 'most', 'such',
                       'very', 'just', 'into', 'only', 'other', 'over', 'after',
-                      'before', 'does', 'going'}
-        words = set(re.findall(r'\b[a-zA-Z]{4,}\b', text.lower()))
+                      'before', 'does', 'going', 'been', 'being', 'having',
+                      'used', 'were'}
+        # Include alphanumeric keywords (e.g., "206", "44th", "COVID")
+        words = set(re.findall(r'\b[a-zA-Z0-9]{3,}\b', text.lower()))
         return words - stopwords
 
     # ------------------------------------------------------------------ #
@@ -193,62 +211,91 @@ class VerificationService:
         has_contradiction = False
         has_inversion = False
 
+        if not ev.strip():
+            return {"debunk": 0, "confirm": 0, "direct_match": False,
+                    "contradiction": False, "inversion": False}
+
         # 0. Subject-Object Inversion Detection
         if self._detect_subject_object_inversion(claim, evidence_text):
             has_inversion = True
             has_contradiction = True
-            debunk_score += 10  # Heavy penalty for inverted relationship
+            debunk_score += 10
 
-        # 1. Marker counting (ONLY in claim-relevant text)
-        # Split evidence into sentences, only count markers in relevant sentences
-        ev_sentences = [s.strip() for s in re.split(r'[.!?]+', ev) if len(s.strip()) > 10]
+        # 1. Split evidence into sentences
+        # Robust split on sentence boundaries
+        ev_sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', ev) if len(s.strip()) > 15]
+        
         for sent in ev_sentences:
-            sent_words = set(re.findall(r'\b[a-zA-Z]{4,}\b', sent))
+            sent_words = self._extract_keywords(sent)
             relevance = len(claim_kw & sent_words) / max(len(claim_kw), 1)
-            if relevance < 0.25:
-                continue  # Skip sentences not about the claim
             
+            if relevance < 0.15:
+                continue  # Skip unrelated sentences
+
+            # --- DEBUNK MARKERS (must be NEAR claim keywords) ---
+            words_list = sent.split()
             for m in self.debunk_markers:
                 if m in sent:
-                    debunk_score += 2
+                    # Check proximity: marker must be within 8 words of a claim keyword
+                    m_pos = sent.find(m)
+                    nearby_text = sent[max(0, m_pos-60):m_pos+60]
+                    if any(kw in nearby_text for kw in claim_kw):
+                        debunk_score += 2
+            
+            # --- CONFIRM MARKERS ---
             for m in self.confirm_markers:
                 if m in sent:
                     confirm_score += 1
 
-        # 2. Sentence-level analysis
-        sentences = [s.strip() for s in re.split(r'[.!?]+', ev) if len(s.strip()) > 15]
-        
-        for sent in sentences:
-            sent_words = set(re.findall(r'\b[a-zA-Z]{4,}\b', sent))
-            overlap = len(claim_kw & sent_words) / max(len(claim_kw), 1)
-            
-            if overlap < 0.35:
-                continue
-
-            # Check negation near claim keywords
-            words_list = sent.split()
+            # --- NEGATION near claim keywords (contradiction detection) ---
             for i, w in enumerate(words_list):
                 if w.strip(".,!?;:'\"") in self.negation_words:
-                    window = " ".join(words_list[max(0, i-4):i+6])
-                    for kw in claim_kw:
-                        if kw in window:
-                            has_contradiction = True
-                            debunk_score += 3
-                            break
+                    window = " ".join(words_list[max(0, i-3):i+5])
+                    if any(kw in window for kw in claim_kw):
+                        has_contradiction = True
+                        debunk_score += 3
+                        break
 
-            # Only count as direct confirmation if the claim is
-            # nearly VERBATIM in the evidence (high bar)
+            # --- FACTUAL CONFIRMATION (the key for arbitrary claims) ---
+            # Increase strictness based on keyword density
+            if len(claim_kw) <= 2:
+                min_relevance = 0.99  # Need both for short claims
+            elif len(claim_kw) <= 4:
+                min_relevance = 0.60  # Need 2/3 or 3/4
+            else:
+                min_relevance = 0.45  # Lenient for long claims
+            
+            if relevance >= min_relevance:
+                # IMPORTANT: Questions should never confirm a claim
+                is_question = "?" in sent or any(sent.strip().lower().startswith(q) for q in ["is ", "are ", "does ", "do ", "can ", "could ", "should ", "will "])
+                
+                has_negation_nearby = any(neg in sent for neg in self.negation_words)
+                if not has_negation_nearby and not is_question:
+                    confirm_score += 2  # Soft factual confirmation
+                    if relevance >= 0.75:
+                        confirm_score += 3  # Stronger factual confirmation
+                        direct_match = True
+
+            # --- VERBATIM / NEAR-VERBATIM MATCH ---
             sim = SequenceMatcher(None, cl, sent).ratio()
-            if sim > 0.65:  # Raised from 0.5 — stricter matching
+            if sim > 0.50:
                 confirm_score += 4
                 direct_match = True
-            # Mere keyword overlap gets ZERO confirm points
-            # (prevents topically-related but contradicting evidence from confirming)
 
-        # 3. Verbatim claim in evidence
+        # Final check: verbatim claim in full evidence
+        # HOWEVER, often fact-check sites repeat the claim to debunk it.
         if cl in ev:
-            confirm_score += 5
-            direct_match = True
+            # Check if a debunk marker is very close to the verbatim claim
+            cl_pos = ev.find(cl)
+            context_window = ev[max(0, cl_pos-60):cl_pos+len(cl)+60]
+            
+            is_debunked_context = any(m in context_window for m in self.debunk_markers)
+            if is_debunked_context:
+                debunk_score += 5
+                has_contradiction = True
+            else:
+                confirm_score += 5
+                direct_match = True
 
         return {
             "debunk": debunk_score,
@@ -400,36 +447,23 @@ class VerificationService:
         # Known true override (well-established scientific facts)
         if is_known_true:
             total_confirm += 20
-            has_direct_match = True  # Known facts count as direct match
+            has_direct_match = True
 
         # Known false override
         if is_known_false:
             total_debunk += 20
 
-        # Extraordinary claim penalty
-        if is_extraordinary:
-            if not has_direct_match:
-                total_debunk += 8
-                print(f"[EXTRA] +8 debunk penalty (extraordinary, no direct confirmation)")
-            total_confirm = max(0, total_confirm - 4)
+        # Extraordinary claim penalty (ONLY for truly extraordinary claims)
+        if is_extraordinary and not has_direct_match:
+            total_debunk += 6
+            print(f"[EXTRA] +6 debunk penalty (extraordinary, no direct confirmation)")
 
-        # Inversion penalty (e.g., Sun/Earth)
-        # BUT ONLY if this is NOT a known-true fact (avoids false flag on correct claims)
+        # Inversion logging (penalty is in verdict logic now)
         if has_inversion and not is_known_true:
-            total_debunk += 8
-            total_confirm = max(0, total_confirm - 6)
-            print(f"[INVERSION] Subject-object inversion detected → heavy debunk penalty")
+            total_debunk += 5
+            print(f"[INVERSION] Subject-object inversion detected")
         elif has_inversion and is_known_true:
             print(f"[INVERSION] Detected but skipped (claim is in known-true database)")
-
-        # Wikipedia coverage check
-        if wiki_context:
-            claim_kw = self._extract_keywords(claim)
-            wiki_kw = self._extract_keywords(wiki_context)
-            coverage = len(claim_kw & wiki_kw) / max(len(claim_kw), 1)
-            if coverage < 0.4:
-                total_debunk += 3
-                print(f"[WIKI] Low coverage ({coverage:.0%}) — topic not well-supported")
 
         print(f"\n[SCORES] Debunk: {total_debunk:.1f} | Confirm: {total_confirm:.1f}")
         print(f"[FLAGS]  Direct: {has_direct_match} | Contradiction: {has_contradiction} | Inversion: {has_inversion}")
@@ -439,42 +473,49 @@ class VerificationService:
         # ═══════════════════════════════════════════════════════
 
         total = max(1, total_debunk + total_confirm)
-
+        
+        # --- STABLE VERDICT ENGINE v4 ---
         if is_known_false:
             verdict = "FALSE"
-            confidence = min(0.97, 0.85 + (total_debunk / total) * 0.12)
+            confidence = 0.98
         elif is_known_true:
-            # Known established fact — short-circuit to TRUE
             verdict = "TRUE"
-            confidence = min(0.95, 0.90 + (total_confirm / total) * 0.05)
-        elif total_debunk > total_confirm * 1.5:
-            # Strong FALSE — debunk significantly outweighs confirm
+            confidence = 0.98
+        elif has_inversion:
             verdict = "FALSE"
-            raw_conf = 0.60 + (total_debunk / total) * 0.35
-            if has_contradiction or has_inversion:
-                raw_conf += 0.05
-            confidence = min(0.97, raw_conf)
-        elif total_debunk > total_confirm:
-            # Weak FALSE
-            verdict = "FALSE"
-            confidence = min(0.75, 0.50 + (total_debunk / total) * 0.20)
-        elif total_confirm > total_debunk * 1.5 and has_direct_match:
-            # Strong TRUE — confirm significantly outweighs debunk + direct match
+            confidence = min(0.95, 0.70 + (total_debunk / total) * 0.25)
+        # Strong True: High confirm score + direct match + score gap
+        elif has_direct_match and total_confirm > total_debunk * 2.5 and total_confirm >= 8:
             verdict = "TRUE"
-            raw_conf = 0.65 + (total_confirm / total) * 0.30
-            confidence = min(0.95, raw_conf)
-        elif total_confirm > total_debunk and has_direct_match:
-            verdict = "LIKELY TRUE"
-            confidence = min(0.78, 0.55 + (total_confirm / total) * 0.20)
-        elif total_confirm > total_debunk:
-            verdict = "LIKELY TRUE"
-            confidence = min(0.65, 0.40 + (total_confirm / total) * 0.20)
-        elif has_contradiction or has_inversion:
+            confidence = min(0.96, 0.85 + (total_confirm - total_debunk) * 0.02)
+        # Moderate True
+        elif total_confirm > total_debunk * 1.5 and total_confirm >= 6:
+            verdict = "TRUE"
+            confidence = min(0.90, 0.70 + (total_confirm - total_debunk) * 0.03)
+        # Strong False
+        elif total_debunk > total_confirm * 2.5 and total_debunk >= 8:
             verdict = "FALSE"
-            confidence = 0.65
+            confidence = min(0.97, 0.85 + (total_debunk - total_confirm) * 0.02)
+        # Moderate False
+        elif total_debunk > total_confirm * 1.5 and total_debunk >= 6:
+            verdict = "FALSE"
+            confidence = min(0.88, 0.70 + (total_debunk - total_confirm) * 0.03)
+        # Low Evidence True
+        elif total_confirm > total_debunk and total_confirm >= 4:
+            verdict = "LIKELY TRUE"
+            confidence = min(0.75, 0.50 + (total_confirm - total_debunk) * 0.05)
+        # Low Evidence False
+        elif total_debunk > total_confirm and total_debunk >= 4:
+            verdict = "MISLEADING"
+            confidence = min(0.70, 0.45 + (total_debunk - total_confirm) * 0.05)
         else:
             verdict = "UNVERIFIED"
-            confidence = 0.20
+            confidence = 0.20 + (total_confirm + total_debunk) * 0.01
+
+        # Conflict check
+        if has_contradiction and verdict in ["TRUE", "LIKELY TRUE"] and total_debunk > 5:
+            verdict = "UNVERIFIED"
+            confidence = 0.40
 
         print(f"\n[VERDICT] {verdict} — Confidence: {confidence:.0%}")
         print(f"{'='*60}\n")
