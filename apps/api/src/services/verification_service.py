@@ -1,6 +1,7 @@
 import re
 from difflib import SequenceMatcher
 from src.services.search_service import get_search_tool
+from src.services.llm_service import get_llm_service
 
 
 class VerificationService:
@@ -416,6 +417,16 @@ class VerificationService:
         counter_analysis = self._analyze_text_for_claim(counter_text, claim)
 
         # ═══════════════════════════════════════════════════════
+        #  PHASE 3: AI EVALUATION (Dynamic Contextualization)
+        # ═══════════════════════════════════════════════════════
+        
+        all_gathered_text = f"SEARCH RESULTS:\n{direct_text}\n\nWIKIPEDIA:\n{wiki_context}\n\nDEEP SCOOP:\n{deep_evidence}"
+        llm = get_llm_service()
+        ai_result = llm.evaluate_claim(claim, all_gathered_text)
+        
+        print(f"[AI VERDICT] {ai_result.get('verdict')} (Conf: {ai_result.get('confidence_score')})")
+
+        # ═══════════════════════════════════════════════════════
         #  PHASE 3: WEIGHTED VERDICT CALCULATION
         # ═══════════════════════════════════════════════════════
 
@@ -472,48 +483,42 @@ class VerificationService:
         #  PHASE 4: VERDICT
         # ═══════════════════════════════════════════════════════
 
+        # --- STABLE VERDICT ENGINE v5 (AI-INFLUENCED) ---
+        ai_verdict = ai_result.get("verdict", "UNVERIFIED")
+        ai_conf = ai_result.get("confidence_score", 0.0)
         total = max(1, total_debunk + total_confirm)
         
-        # --- STABLE VERDICT ENGINE v4 ---
         if is_known_false:
             verdict = "FALSE"
             confidence = 0.98
         elif is_known_true:
             verdict = "TRUE"
             confidence = 0.98
+        # High-confidence AI match
+        elif ai_conf > 0.70:
+            verdict = ai_verdict
+            confidence = ai_conf
         elif has_inversion:
             verdict = "FALSE"
             confidence = min(0.95, 0.70 + (total_debunk / total) * 0.25)
-        # Strong True: High confirm score + direct match + score gap
+        # Strong True (Heuristic): High confirm score + direct match + score gap
         elif has_direct_match and total_confirm > total_debunk * 2.5 and total_confirm >= 8:
             verdict = "TRUE"
             confidence = min(0.96, 0.85 + (total_confirm - total_debunk) * 0.02)
-        # Moderate True
+        # Moderate True (Heuristic)
         elif total_confirm > total_debunk * 1.5 and total_confirm >= 6:
             verdict = "TRUE"
             confidence = min(0.90, 0.70 + (total_confirm - total_debunk) * 0.03)
-        # Strong False
-        elif total_debunk > total_confirm * 2.5 and total_debunk >= 8:
-            verdict = "FALSE"
-            confidence = min(0.97, 0.85 + (total_debunk - total_confirm) * 0.02)
-        # Moderate False
-        elif total_debunk > total_confirm * 1.5 and total_debunk >= 6:
-            verdict = "FALSE"
-            confidence = min(0.88, 0.70 + (total_debunk - total_confirm) * 0.03)
-        # Low Evidence True
-        elif total_confirm > total_debunk and total_confirm >= 4:
-            verdict = "LIKELY TRUE"
-            confidence = min(0.75, 0.50 + (total_confirm - total_debunk) * 0.05)
-        # Low Evidence False
-        elif total_debunk > total_confirm and total_debunk >= 4:
-            verdict = "MISLEADING"
-            confidence = min(0.70, 0.45 + (total_debunk - total_confirm) * 0.05)
+        # Low Evidence: Use AI if available, else UNVERIFIED
+        elif ai_conf > 0.40:
+            verdict = ai_verdict
+            confidence = ai_conf
         else:
             verdict = "UNVERIFIED"
             confidence = 0.20 + (total_confirm + total_debunk) * 0.01
 
         # Conflict check
-        if has_contradiction and verdict in ["TRUE", "LIKELY TRUE"] and total_debunk > 5:
+        if has_contradiction and verdict in ["TRUE", "LIKELY TRUE"] and total_debunk > 5 and ai_verdict != "TRUE":
             verdict = "UNVERIFIED"
             confidence = 0.40
 
@@ -524,7 +529,8 @@ class VerificationService:
             "verdict": verdict,
             "confidence_score": round(confidence, 2),
             "sources": all_display_results[:6],
-            "extracted_claim": claim
+            "extracted_claim": claim,
+            "ai_reasoning": ai_result.get("brief_reasoning", "")
         }
 
 

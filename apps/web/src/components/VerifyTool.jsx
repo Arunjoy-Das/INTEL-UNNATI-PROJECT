@@ -143,6 +143,13 @@ export default function VerifyTool() {
               <div className="space-y-4">
                 <span className="text-[0.8rem] text-[#e0e1e3]/35 tracking-widest block uppercase mb-2">EXTRACTED CLAIM</span>
                 <p className="text-base border-l-2 border-cyan pl-5 italic leading-relaxed text-[#e0e1e3]/70">{result.extracted_claim}</p>
+                
+                {result.ai_reasoning && (
+                  <div className="mt-8">
+                    <span className="text-[0.8rem] text-cyan/40 tracking-widest block uppercase mb-2">AI EVALUATION</span>
+                    <p className="text-sm border-l-2 border-cyan/30 pl-5 leading-relaxed text-[#e0e1e3]/60">{result.ai_reasoning}</p>
+                  </div>
+                )}
               </div>
               <div className="flex flex-col items-center justify-center text-center">
                 <div className={`text-5xl font-bold tracking-tighter mb-3 ${
