@@ -39,7 +39,7 @@ class SearchTools:
         try:
             resp = requests.get(
                 f"https://html.duckduckgo.com/html/?q={quote_plus(query)}",
-                headers=self.headers, timeout=8
+                headers=self.headers, timeout=12, verify=False
             )
             if resp.status_code == 200:
                 soup = BeautifulSoup(resp.text, "html.parser")
@@ -63,7 +63,7 @@ class SearchTools:
         results = []
         try:
             url = f"https://news.google.com/rss/search?q={quote_plus(query)}&hl=en-US&gl=US&ceid=US:en"
-            resp = requests.get(url, headers=self.headers, timeout=8)
+            resp = requests.get(url, headers=self.headers, timeout=12, verify=False)
             if resp.status_code == 200:
                 soup = BeautifulSoup(resp.text, "xml")
                 for item in soup.find_all("item")[:5]:
@@ -94,7 +94,7 @@ class SearchTools:
             resp = requests.get(url, headers={
                 **self.headers,
                 "Referer": "https://www.reuters.com/"
-            }, timeout=8)
+            }, timeout=12, verify=False)
             if resp.status_code == 200:
                 soup = BeautifulSoup(resp.text, "html.parser")
                 # Reuters uses data-testid for search results
@@ -122,7 +122,7 @@ class SearchTools:
         results = []
         try:
             url = f"https://www.bbc.co.uk/search?q={quote_plus(query)}"
-            resp = requests.get(url, headers=self.headers, timeout=8)
+            resp = requests.get(url, headers=self.headers, timeout=12, verify=False)
             if resp.status_code == 200:
                 soup = BeautifulSoup(resp.text, "html.parser")
                 # BBC search results
@@ -147,7 +147,7 @@ class SearchTools:
         results = []
         try:
             url = f"https://www.snopes.com/?s={quote_plus(query)}"
-            resp = requests.get(url, headers=self.headers, timeout=8)
+            resp = requests.get(url, headers=self.headers, timeout=12, verify=False)
             if resp.status_code == 200:
                 soup = BeautifulSoup(resp.text, "html.parser")
                 for article in soup.find_all("article", limit=5):
@@ -172,7 +172,7 @@ class SearchTools:
         results = []
         try:
             api = f"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={quote_plus(query)}&srlimit=5&format=json"
-            data = requests.get(api, headers=self.headers, timeout=8).json()
+            data = requests.get(api, headers=self.headers, timeout=12, verify=False).json()
             if "query" in data and data["query"]["search"]:
                 for item in data["query"]["search"][:5]:
                     title = item['title']
@@ -251,7 +251,7 @@ class SearchTools:
         Used for deep verification when we need more context.
         """
         try:
-            resp = requests.get(url, headers=self.headers, timeout=10)
+            resp = requests.get(url, headers=self.headers, timeout=15, verify=False)
             if resp.status_code == 200:
                 soup = BeautifulSoup(resp.text, "html.parser")
                 
@@ -277,7 +277,7 @@ class SearchTools:
         """Get the first paragraph summary of a Wikipedia page."""
         try:
             api = f"https://en.wikipedia.org/api/rest_v1/page/summary/{topic.replace(' ', '_')}"
-            data = requests.get(api, headers=self.headers, timeout=8).json()
+            data = requests.get(api, headers=self.headers, timeout=12, verify=False).json()
             return data.get("extract", "")
         except:
             return ""

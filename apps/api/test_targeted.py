@@ -1,8 +1,8 @@
 """Targeted test: Fails from the universal test"""
 import sys
 sys.path.insert(0, '.')
-sys.stdout = open('test_targeted_output.txt', 'w', encoding='utf-8')
-sys.stderr = sys.stdout
+# sys.stdout = open('test_targeted_output.txt', 'w', encoding='utf-8')
+# sys.stderr = sys.stdout
 
 from src.services.verification_service import get_verification_service
 

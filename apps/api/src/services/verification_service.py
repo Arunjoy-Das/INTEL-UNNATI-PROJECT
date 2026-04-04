@@ -151,7 +151,13 @@ class VerificationService:
                       'also', 'than', 'then', 'some', 'more', 'most', 'such',
                       'very', 'just', 'into', 'only', 'other', 'over', 'after',
                       'before', 'does', 'going', 'been', 'being', 'having',
-                      'used', 'were'}
+                      'used', 'were', 'make', 'made', 'takes', 'took', 'given',
+                      'around', 'says', 'said', 'both', 'between', 'through',
+                      'while', 'during', 'without', 'since', 'under', 'including',
+                      'against', 'those', 'these', 'whose', 'whom', 'wherever',
+                      'gets', 'knows', 'done', 'went', 'every', 'each', 'either',
+                      'neither', 'both', 'another', 'many', 'much', 'some',
+                      'often', 'always', 'rarely', 'sometime', 'almost', 'ever'}
         # Include alphanumeric keywords (e.g., "206", "44th", "COVID")
         words = set(re.findall(r'\b[a-zA-Z0-9]{3,}\b', text.lower()))
         return words - stopwords
@@ -249,13 +255,18 @@ class VerificationService:
                     confirm_score += 1
 
             # --- NEGATION near claim keywords (contradiction detection) ---
+            # Stricter proximity window: negation must be within 2 words of a core keyword
             for i, w in enumerate(words_list):
                 if w.strip(".,!?;:'\"") in self.negation_words:
-                    window = " ".join(words_list[max(0, i-3):i+5])
-                    if any(kw in window for kw in claim_kw):
-                        has_contradiction = True
-                        debunk_score += 3
-                        break
+                    context_window_words = words_list[max(0, i-2):min(len(words_list), i+3)]
+                    window_text = " ".join(context_window_words)
+                    if any(kw in window_text for kw in claim_kw):
+                        # Detect "not false" or "no fake" (double negation)
+                        is_double_negation = any(m in window_text for m in self.debunk_markers if m != "false")
+                        if not is_double_negation:
+                            has_contradiction = True
+                            debunk_score += 4
+                            break
 
             # --- FACTUAL CONFIRMATION (the key for arbitrary claims) ---
             # Increase strictness based on keyword density
@@ -498,9 +509,14 @@ class VerificationService:
         elif ai_conf > 0.70:
             verdict = ai_verdict
             confidence = ai_conf
-        elif has_inversion:
+        # Strong False (Heuristic): High debunk score + contradiction + score gap
+        elif has_contradiction and total_debunk > total_confirm * 2.5 and total_debunk >= 8:
             verdict = "FALSE"
-            confidence = min(0.95, 0.70 + (total_debunk / total) * 0.25)
+            confidence = min(0.96, 0.82 + (total_debunk - total_confirm) * 0.02)
+        # Moderate False (Heuristic)
+        elif total_debunk > total_confirm * 1.5 and total_debunk >= 6:
+            verdict = "FALSE"
+            confidence = min(0.90, 0.70 + (total_debunk - total_confirm) * 0.03)
         # Strong True (Heuristic): High confirm score + direct match + score gap
         elif has_direct_match and total_confirm > total_debunk * 2.5 and total_confirm >= 8:
             verdict = "TRUE"
@@ -509,6 +525,10 @@ class VerificationService:
         elif total_confirm > total_debunk * 1.5 and total_confirm >= 6:
             verdict = "TRUE"
             confidence = min(0.90, 0.70 + (total_confirm - total_debunk) * 0.03)
+        # Misleading: Close score or high contradiction despite match
+        elif total_confirm > 5 and total_debunk > 5 and abs(total_confirm - total_debunk) < total_confirm * 0.4:
+            verdict = "MISLEADING"
+            confidence = 0.65
         # Low Evidence: Use AI if available, else UNVERIFIED
         elif ai_conf > 0.40:
             verdict = ai_verdict
@@ -517,8 +537,10 @@ class VerificationService:
             verdict = "UNVERIFIED"
             confidence = 0.20 + (total_confirm + total_debunk) * 0.01
 
-        # Conflict check
-        if has_contradiction and verdict in ["TRUE", "LIKELY TRUE"] and total_debunk > 5 and ai_verdict != "TRUE":
+        # Conflict check - trigger UNVERIFIED only if debunk is significant relative to confirm
+        # If total_confirm is high, we need total_debunk to be > 40% of confirm to force UNVERIFIED
+        debunk_threshold = max(5.0, total_confirm * 0.45)
+        if has_contradiction and verdict in ["TRUE", "LIKELY TRUE"] and total_debunk > debunk_threshold and ai_verdict != "TRUE":
             verdict = "UNVERIFIED"
             confidence = 0.40
 

@@ -1,0 +1,468 @@
+======================================================================
+  FACTGUARD — UNIVERSAL CLAIM VERIFICATION TEST
+  Testing: Database facts + Arbitrary unknown claims
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: Water boils at 100 degrees Celsius
+============================================================
+[KNOWN TRUE] Matched established facts database: Water boils at 100°C (212°F) at standard atmospheric pressure
+[INFO] Extraordinary: False
+[INFO] Entities: ['Celsius']
+[INFO] Counter-query: At what temperature does water boils
+[SEARCH] Querying: Water boils at 100 degrees Celsius
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: Water boils at 100 degrees Celsius fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: At what temperature does water boils
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMid0FVX3lxTFBIRWVxZGxiU2NieHN4SHlPSWdfQVRybnFUdi1JN2hzcEJKS3BVX3V0NE1wOWdNRjFyYUhMbGc4YVdLOS1YRjdhUWZmYlN1MUdPWWxQVG9YcDh5bTQyeGVQend2d0Vpa1RqVzlGLXFkU0RlZ3BEZTdR?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMickFVX3lxTFBvQzE0Tzd2TGNpSUtrWl9QNXVNbFNFU00tM1hVbGhGZGs0b1RzRnBySnBBVDREYWNnMnNySXhIOThXY3VmeGRVX2lyOGVuSFRWOUJSRWlVSEtpRTdtd0RramgwdHE2R3p6MkxwNXEyZDIxdw?oc=5
+[WIKI] Celsius: The degree Celsius is the unit of temperature on the Celsius temperature scale, one of two temperature scales used in th...
+
+[SCORES] Debunk: 0.0 | Confirm: 20.0
+[FLAGS]  Direct: True | Contradiction: False | Inversion: False
+
+[VERDICT] TRUE — Confidence: 95%
+============================================================
+
+
+======================================================================
+  ✓ PASS | Expected: TRUE | Got: TRUE (95%)
+  Claim: Water boils at 100 degrees Celsius
+  Sources fetched: 6
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: The sun revolves around the Earth
+============================================================
+[KNOWN FALSE] Matched misconception database: The Earth revolves around the Sun, not vice versa
+[INFO] Extraordinary: False
+[INFO] Entities: ['Earth']
+[INFO] Counter-query: What revolves around what the sun or the earth
+[SEARCH] Querying: The sun revolves around the Earth
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: The sun revolves around the Earth fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: What revolves around what the sun or the earth
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMirwFBVV95cUxNdUV6VmE3cFYtOHNwZ2N5dXo3RXJPZ21BQjBnLW1PMS1kaTFZUWZQOWYyVkhsX2R4OFJPYzNwTFViRWFBQVVpMmk2TFJJdW1jUXJjSzcxUnUyZGJDUGlibGFMRjdDazdWcXBLV3RFYk5DTk14X1VibF9saFZhS1dZdEQ4OW5hX01WNExJOE1sbnZLR2k5bGJoVmU0emxYX3Bwc1RSLXRMSmdTSzNWMW1F?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMijAFBVV95cUxOQXNCYm9BR3JtSl9reGU2YnRNaWtWSFpOVl9WMzlnWW1LQlgtdFJwNm5FbWVHck9Sb1locVhCOUJZYlFXcWpiU3dLQ1VEanBITVByR0k5ZG9aRDNXZlhXN256UGs5cHg4VzBwXzVGR0lLRjFpUzN2bXVCbVMyOFFXUmQ4cE9vd1otU3VwVQ?oc=5
+[WIKI] Earth: Earth is the third planet from the Sun and the only astronomical object known to harbor life. This is made possible by E...
+[INVERSION] Detected! Claim: sun→earth, Evidence: earth→sun
+[INVERSION] Subject-object inversion detected
+
+[SCORES] Debunk: 59.5 | Confirm: 2.0
+[FLAGS]  Direct: False | Contradiction: True | Inversion: True
+
+[VERDICT] FALSE — Confidence: 97%
+============================================================
+
+
+======================================================================
+  ✓ PASS | Expected: FALSE | Got: FALSE (97%)
+  Claim: The sun revolves around the Earth
+  Sources fetched: 6
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: COVID vaccines cause autism
+============================================================
+[KNOWN FALSE] Matched misconception database: Scientific consensus: vaccines do not cause autism
+[INFO] Extraordinary: False
+[INFO] Entities: ['COVID', 'vaccines', 'cause']
+[INFO] Counter-query: covid vaccines cause autism true or false
+[SEARCH] Querying: COVID vaccines cause autism
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: COVID vaccines cause autism fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: covid vaccines cause autism true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMilwFBVV95cUxPSmh5R3pma1ZHZmpHZFVBekVINUhTVmVvNHphcy0wTmFtaXV4ZnRLX3Y2YkMweFI0NFI0b0E4eDZhNS1fNTc1aVRKZDRQSXFtZlFudHlleDZrWV82Wmp1MnJPVFdsVUVEbGhGNHhWNVRWdXpTaWVOWVNwNzVaa04tYVFMbWptUjhBWE9kc0tPeFFya2xhVXZr?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMickFVX3lxTE41WXVYMURHUTU2YzdLeTdpU1VIS05USFg3WEprRDJjN3d3RUZiV3U2RVY4di1QeHV0aFBwNnkyeTItYW5rdnJ1a2JyN3JaQzVWN0w4OFRkazdYMjFPT0thdFc2TVl3V0xRMlU5QndTX0ItUQ?oc=5
+[WIKI] COVID: Coronavirus disease 2019 (COVID-19) is a contagious disease caused by the coronavirus SARS-CoV-2. Starting in January 20...
+[WIKI] vaccines: A vaccine is a biological preparation that provides active acquired immunity to a particular infectious or malignant dis...
+
+[SCORES] Debunk: 50.0 | Confirm: 6.0
+[FLAGS]  Direct: True | Contradiction: True | Inversion: False
+
+[VERDICT] FALSE — Confidence: 96%
+============================================================
+
+
+======================================================================
+  ✓ PASS | Expected: FALSE | Got: FALSE (96%)
+  Claim: COVID vaccines cause autism
+  Sources fetched: 6
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: India is the most populous country in the world
+============================================================
+[KNOWN TRUE] Matched established facts database: India surpassed China as the most populous country in 2023
+[INFO] Extraordinary: False
+[INFO] Entities: ['India', 'most', 'populous']
+[INFO] Counter-query: india is the most populous country in the world true or false
+[SEARCH] Querying: India is the most populous country in the world
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: India is the most populous country in the world fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: india is the most populous country in the world true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiiAFBVV95cUxPNnNIVHdTcEl5cDVPU1Z1aW1XOHhhQWpoa3pHbFA4aWtEcS0zdkRuVVdTcFBjS05tWlhHbzFJcFM5R255T0FMcVdycmNyanNZZ21mS1BVb25KSUVIZnlERGtVbTBYVkpSelVjTXNnUVFDTmo0VmU1RTEzT3l6MlhiY0FGZzF2cGlo?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiWkFVX3lxTFB3c0szMG5yRDFlRXpYMWNnVDNlY1BUYlgtYW83SzRLb0VoaUdhblIwODFDeVlvR2JPTjd4bkItQ0FwSWtfUGZPaU1pQVc3ektUZmEtTEZQUjZnUQ?oc=5
+[WIKI] India: India, officially the Republic of India, is a country in South Asia. It is the seventh-largest country by area; the most...
+[WIKI] most: Most or Möst may refer to:...
+
+[SCORES] Debunk: 3.0 | Confirm: 40.0
+[FLAGS]  Direct: True | Contradiction: False | Inversion: False
+
+[VERDICT] TRUE — Confidence: 95%
+============================================================
+
+
+======================================================================
+  ✓ PASS | Expected: TRUE | Got: TRUE (95%)
+  Claim: India is the most populous country in the world
+  Sources fetched: 6
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: Mount Everest is the tallest mountain in the world
+============================================================
+[KNOWN TRUE] Matched established facts database: Mount Everest is the highest mountain above sea level at 8,849m
+[INFO] Extraordinary: False
+[INFO] Entities: ['Mount Everest', 'Everest']
+[INFO] Counter-query: mount everest is the tallest mountain in the world true or false
+[SEARCH] Querying: Mount Everest is the tallest mountain in the world
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: Mount Everest is the tallest mountain in the world fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: mount everest is the tallest mountain in the world true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMifkFVX3lxTFA4VmhkclpMUWtMYUVYR1R4ZEZrdkEwTUtzTGFyZnM5S1daUEl5RDBFdmV6SDRqci1OdzVsYjA1OVVhc1ZxQXV5b3N0eFUxV2lGQ09Kd0J4RGEzYmt3NFhhZlh2alpkMUtHRUczTnF0TV9kRzJOdXdJWTZIZWZwZw?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMihAFBVV95cUxQU1RUNUt0eGE0Zm1FU0pEaFNBZ2RxdVRZalZoeFRPSXNiRFRtN1QwMGN0OFowNk9fNnRYUzgtTWFpTlZUcTh2RklWTkNkUzZhRHVtWldWTnZReW5rRDFFWjI3Nk5PZWlnREdKOFJTZ2xkZVl0X3ZJbGo1Z2NQbk9DQXhtcWQ?oc=5
+[WIKI] Mount Everest: Mount Everest is Earth's highest mountain above sea level. It lies in the Mahalangur Himal sub-range of the Himalayas an...
+[WIKI] Everest: Mount Everest is Earth's highest mountain above sea level. It lies in the Mahalangur Himal sub-range of the Himalayas an...
+
+[SCORES] Debunk: 21.5 | Confirm: 52.0
+[FLAGS]  Direct: True | Contradiction: True | Inversion: False
+
+[VERDICT] TRUE — Confidence: 94%
+============================================================
+
+
+======================================================================
+  ✓ PASS | Expected: TRUE | Got: TRUE (94%)
+  Claim: Mount Everest is the tallest mountain in the world
+  Sources fetched: 6
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: The capital of France is Paris
+============================================================
+[INFO] Extraordinary: False
+[INFO] Entities: ['France', 'Paris']
+[INFO] Counter-query: the capital of france is paris true or false
+[SEARCH] Querying: The capital of France is Paris
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: The capital of France is Paris fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: the capital of france is paris true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiqgFBVV95cUxQYjlfNEsycDNLd0JTTmJhb1R5dUo2c19pcXZoMjRFSTFHUTBNSVhCZ2RiZFBqb0twcF9oZ3g0V0dvbzNvMWRsSnVIUEV2SXctMS02V3dQd0RhM1BFeUR4TGFZZ2hHaG5kX2Zia2U0WmJFU2hUck44Yk0zbVFTdURvMDRMMkxHeDVNeU80OVhwN0RiaGhsWjV5VGRoNXJkQnNHd1RRVk1QaWIxUQ?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMitAFBVV95cUxNRDY3LXU2dUU3ZXl4UEdTVmplbFFLV1JxZnVHcnJhZ2Jycml3VnQyanNBbkxkaGo4S1FKNFYtazA2Q1UwTFZlaVdKQllYVTUxLVVvaFo5eGpTLXFjQlkzSTZvR09VaHNSUFNpZG4tcnkzYmZvd0E5UVNhMnMzTHNpSXlQY3ExUlUtcGpGdkxua2JBRUo5c1dhaGpoYmNxMlFSU1ZTWTZpN0R0Sm1PRmxGVHJGUlQ?oc=5
+[WIKI] France: France, officially the French Republic, is a country primarily located in Western Europe. Its overseas regions and terri...
+[WIKI] Paris: Paris is the capital and largest city of France, with an estimated city population of 2.04 million in an area of 105.4 k...
+
+[SCORES] Debunk: 15.0 | Confirm: 14.0
+[FLAGS]  Direct: True | Contradiction: True | Inversion: False
+
+[VERDICT] LIKELY TRUE — Confidence: 50%
+============================================================
+
+
+======================================================================
+  ✓ PASS | Expected: TRUE | Got: LIKELY TRUE (50%)
+  Claim: The capital of France is Paris
+  Sources fetched: 6
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: The Amazon River is in South America
+============================================================
+[INFO] Extraordinary: False
+[INFO] Entities: ['River', 'America', 'South America', 'The Amazon River']
+[INFO] Counter-query: the amazon river is in south america true or false
+[SEARCH] Querying: The Amazon River is in South America
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: The Amazon River is in South America fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: the amazon river is in south america true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMirAFBVV95cUxPN2wyQWlVNTliOHVqMlVmMDZmdlFuYTlnNV9KaVlCZjJ1WmF1SF94QjF6VkhoU3l5U1haR0pYTm1uT3FqQ1Z4Rm54Sm9JckFhTWcxSnhZOElQYTU3d0xUSGY5eEJQdnQwbTc5RmlfV1JDMGNEbUJqNkxTSlBiaFZNcTVaUm9PNXZNMmc0TWY4UHVjODR2SENzamYzTFFhdHhEanN6V1lpWGtfTUF20gGyAUFVX3lxTE9GeGxOUlY0Q28wMXlhZjV6VEVSUEhUalRXeHhfVkRhdWREV1NtWlRVd0FsTWxfZUJiMVBJVzRyb25qR2hhN21HRk9ESkZkVzR0Y0VxQWJ3WFVzT1JkdG5NbGoxbXBjc05QUjNkRHltWHFQOGVXWTFVbUZlYlBSVFZwUi1LMHJ2NnNta2JkZnkyYXRBWmdaVG5xSExKQ3VpNUhtSXB1SFRHcjJ0d1FOLVpKd3c?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiggFBVV95cUxQVVBBcUtVZmdCWEVHZHNCQWFpZmxPV1I3bHkxTzhuWWlMTTJ6ZDlkVlV5SlduaHphN24tWHhkUlVTREJLM0RQR1lQV3dDN0NGdS13MEZVcHQ0RU9OWkNHdnEtWm5UYlpjdmpZNEpIV3E1YlFsaUhEQnZOajAxVGtpMkNB?oc=5
+[WIKI] River: A river is a natural stream of fresh water that flows on land or inside caves towards another body of water at a lower e...
+[WIKI] America: The United States of America (USA), also known as the United States (U.S.) or America, is a country primarily located in...
+
+[SCORES] Debunk: 0.0 | Confirm: 5.0
+[FLAGS]  Direct: True | Contradiction: False | Inversion: False
+
+[VERDICT] TRUE — Confidence: 95%
+============================================================
+
+
+======================================================================
+  ✓ PASS | Expected: TRUE | Got: TRUE (95%)
+  Claim: The Amazon River is in South America
+  Sources fetched: 6
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: Japan is an island country
+============================================================
+[INFO] Extraordinary: False
+[INFO] Entities: ['Japan', 'island', 'country']
+[INFO] Counter-query: japan is an island country true or false
+[SEARCH] Querying: Japan is an island country
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: Japan is an island country fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: japan is an island country true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMipAFBVV95cUxQUmU3X0dORG8yZW5hcDNGVnJGdGxtT1h4aENrLTMyZUZrNEJGSi15T0NlYXBEelp1U2tnUkZEUnZsU25UVkVxSDBLOGNKTmMxazRJaEtGWGFoSDFMX29ubFpYbzFjeWpKRkRGbmdDRUNnZHUtWmVOWm42XzZ3SjJzdkJBTTBLZVpIR2c3VXJhcjBIdmF4bHBGSVdVQS1sZGVFcXJacw?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiVkFVX3lxTE1aTXE2WTcwTlotRVYtZWJRLVJQY0s1MG1fdmN0NUEzRlV0OVNiMGJVM0QycExyeEFNMmZXdUlhNmFTQkhSTjgtQ0h6WUVaRDlNbzdRR0Fn?oc=5
+[WIKI] Japan: Japan is an island country in East Asia. Located in the Pacific Ocean off the northeast coast of the Asian mainland, it ...
+[WIKI] island: An island or isle is a piece of land, distinct from a continent, completely surrounded by water. There are continental i...
+
+[SCORES] Debunk: 7.5 | Confirm: 30.0
+[FLAGS]  Direct: True | Contradiction: True | Inversion: False
+
+[VERDICT] TRUE — Confidence: 89%
+============================================================
+
+
+======================================================================
+  ✓ PASS | Expected: TRUE | Got: TRUE (89%)
+  Claim: Japan is an island country
+  Sources fetched: 6
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: Bill Gates is going to become next PM of India
+============================================================
+[INFO] Extraordinary: True
+[INFO] Entities: ['Bill Gates', 'India', 'Gates']
+[INFO] Counter-query: Who is the next pm of india
+[SEARCH] Querying: Bill Gates is going to become next PM of India
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: Bill Gates is going to become next PM of India fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: Who is the next pm of india
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiowFBVV95cUxOTnhFZkpYY3EyN1NEV3h4QlF4T1hwR2had3p1eWkxLW4wNXR4bmZlUVZxMzVQT0YyRFNuRUtKRGJkODVUc1lmbmRiZU1vMkRtUUkwNEh0WEFndWNQWElIYzhjY3VVTnpkbmxQZE5pV0EwTUVMcnF1bk1WdE5TbzU4OXVrOFFmeThOVFFqaW9BcnBBb3VaUFpBMERua1Y2Slo3amlj0gGoAUFVX3lxTE16bWprOVVIZGp2cVdNRXJXSWtNVjZEVVJwOFRCdEwyVWk1Qno4MUluTng2dGNBLUVhQjR3bUszb0txZGU4b0U3SUFVM3hYWlA1Q2VZS2NSQVlvRko0Yy1NcDA1LTVLUkd3VjVBbXpLMEpOWFhaazRSNllMQjNxd1FYa2VwY1RCdGo4RnVDY2taNmtDenZtaU1TVF9DVjBlRGJpZUFkcWZVag?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMikgFBVV95cUxPT3REMGRJajd6YXZaMDBSY2JNNlpYekhXeDJuNjVab1NpVXIyWUNwOGZ1aVNZam9jbk84U0twU2VJRFFWMFN2ZlJYUnN0TE9BTHhkRXoxdlotNXJ6Si1OSHAwTmlldVhyVThPTHRPdU5NNWNOVXRhZWJPbnh6NU5SNG5HNFJLYXJqY09mUzdOazVsZw?oc=5
+[WIKI] Bill Gates: William Henry Gates III is an American businessman and philanthropist. A pioneer of the microcomputer revolution of the ...
+[WIKI] India: India, officially the Republic of India, is a country in South Asia. It is the seventh-largest country by area; the most...
+[EXTRA] +6 debunk penalty (extraordinary, no direct confirmation)
+
+[SCORES] Debunk: 16.5 | Confirm: 4.0
+[FLAGS]  Direct: False | Contradiction: True | Inversion: False
+
+[VERDICT] FALSE — Confidence: 93%
+============================================================
+
+
+======================================================================
+  ✓ PASS | Expected: FALSE | Got: FALSE (93%)
+  Claim: Bill Gates is going to become next PM of India
+  Sources fetched: 6
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: Elon Musk has been elected president of Japan
+============================================================
+[INFO] Extraordinary: True
+[INFO] Entities: ['Japan', 'Elon Musk', 'Musk']
+[INFO] Counter-query: elon musk has been elected president of japan true or false
+[SEARCH] Querying: Elon Musk has been elected president of Japan
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: Elon Musk has been elected president of Japan fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: elon musk has been elected president of japan true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMikwFBVV95cUxPdlhBNHF5TTZDRnBuOGYwc1dMWHc3X0tDLWt4VktibThBZ0hrQ3BiaFZDN19LUUItejhURVk0c2dxSlFEQ3RTMnJSUWRpb3FrQ2YtYy1iV0hmT2hhLWpqWFZHUU1rQ1ZXZnNWTURmY2l3S1E2VUVzRTNRTE1DcXB6X245VjJXZTJEY2JWdVExRUNMbGM?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMia0FVX3lxTE5FN0E3SmZXUmhWRnR2MEI5Vi1Id1NWdnlyYS1kTUJxY2YyamFJdmd0QlhDSWtWWWktZlhSM2FVY1Z0QXV2TXdTU1NzZ1pYR0x3dHZtbVRibkVMTU9YM2hVdm5zWl8wRE9aNGlv?oc=5
+[WIKI] Japan: Japan is an island country in East Asia. Located in the Pacific Ocean off the northeast coast of the Asian mainland, it ...
+[WIKI] Elon Musk: Elon Reeve Musk is a businessman and entrepreneur known for his leadership of Tesla, SpaceX, X, and xAI. Musk has been t...
+[EXTRA] +6 debunk penalty (extraordinary, no direct confirmation)
+
+[SCORES] Debunk: 6.0 | Confirm: 0.0
+[FLAGS]  Direct: False | Contradiction: False | Inversion: False
+
+[VERDICT] FALSE — Confidence: 95%
+============================================================
+
+
+======================================================================
+  ✓ PASS | Expected: FALSE | Got: FALSE (95%)
+  Claim: Elon Musk has been elected president of Japan
+  Sources fetched: 6
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: Drinking bleach cures COVID
+============================================================
+[INFO] Extraordinary: True
+[INFO] Entities: ['Drinking', 'bleach', 'cures']
+[INFO] Counter-query: drinking bleach cures covid true or false
+[SEARCH] Querying: Drinking bleach cures COVID
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: Drinking bleach cures COVID fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: drinking bleach cures covid true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMioAFBVV95cUxNbVJMd3kwak1fUkVMaEp6UlVXOWZfQkwzSlZRUVNQUEdCNDhrYTB2QU5aR2Q4dkNkRFRKOGU1QlJfTVl1QnRwaEJUT3lKWVVPZDhuQUwtLWJrdDZQWl9Lc052YkZLN0Rfc2paSUwydGYwR1dhcWFsRDRaeXFZdElPYVI0bG54UWVUR3cwVkJoXzI3S0cwWDhLNzZ1T2JlZElh?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiogFBVV95cUxNQkY4SVIyamN3YVZCMW1pdE5rX2s1NDZoQnBEcTF6Z1QxRlhNNVZfblV0V0ZXMkdVbVlrdUxpbGZ3aUE3U2ZxV0c2Ym1BZVdmSlRiNHhIZFo5bndFbEk2dTdLc051TkFXcG5rc2hwTVN5ZVo0WjN0dE1mY2c1TjJBMFJMdWpDTi0tVTR5ZW9SbjFzV0Y2bG84ejQtdU1ZVms3dGc?oc=5
+[WIKI] Drinking: Drinking is the act of ingesting water or other liquids into the body through the mouth, proboscis, or elsewhere. Humans...
+[WIKI] bleach: Bleach is the generic name for any chemical product that is used industrially or domestically to remove color from fabri...
+[EXTRA] +6 debunk penalty (extraordinary, no direct confirmation)
+
+[SCORES] Debunk: 30.5 | Confirm: 0.0
+[FLAGS]  Direct: False | Contradiction: True | Inversion: False
+
+[VERDICT] FALSE — Confidence: 97%
+============================================================
+
+
+======================================================================
+  ✓ PASS | Expected: FALSE | Got: FALSE (97%)
+  Claim: Drinking bleach cures COVID
+  Sources fetched: 6
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: Barack Obama was the 44th president of the United States
+============================================================
+[INFO] Extraordinary: False
+[INFO] Entities: ['United States', 'Obama', 'United', 'States']
+[INFO] Counter-query: barack obama was the 44th president of the united states true or false
+[SEARCH] Querying: Barack Obama was the 44th president of the United States
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: Barack Obama was the 44th president of the United States fact check true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[SEARCH] Querying: barack obama was the 44th president of the united states true or false
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiZkFVX3lxTE1lcmQ0S25wdC03Mm9zcDR3Mll4T2FHUW5lV0M4bzBIdFNtcE5oZFZLYnNKV3ZDUGUyRU9LMGcyNTlpd0xSZmRzWURyekhEZFNtNjZYX3JwTDZBbnJZQzRkVmktc2FEZw?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMifkFVX3lxTE5SeXFhX2hTcGdFSjctZHFVUWxtNVJ6YVBEMloyQkJ2QmRadVpLRW44c1JxNnFtT3VNNjJDQUwwWmVMSGJLRi13UTNUVWxwNTZJS195S2ZEclFJTEtfdWVPcGx6OG5mQzN5Yjh4dnpxcjdvYU5NZF9VVmNyTlpUZw?oc=5
+[WIKI] United States: The United States of America (USA), also known as the United States (U.S.) or America, is a country primarily located in...
+[WIKI] Obama: Barack Hussein Obama II is an American politician who served as the 44th president of the United States from 2009 to 201...
+
+[SCORES] Debunk: 2.0 | Confirm: 16.0
+[FLAGS]  Direct: True | Contradiction: False | Inversion: False
+
+[VERDICT] TRUE — Confidence: 92%
+============================================================
+
+
+======================================================================
+  ✓ PASS | Expected: TRUE | Got: TRUE (92%)
+  Claim: Barack Obama was the 44th president of the United States
+  Sources fetched: 6
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: The human body has 206 bones
+============================================================
+[INFO] Extraordinary: False
+[INFO] Entities: ['human', 'body', 'bones']
+[INFO] Counter-query: the human body has 206 bones true or false
+[SEARCH] Querying: The human body has 206 bones
+Traceback (most recent call last):
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\test_comprehensive.py", line 43, in <module>
+    result = svc.process_claim(claim)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\src\services\verification_service.py", line 338, in process_claim
+    results_direct = self.search.web_search(claim)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\src\services\search_service.py", line 210, in web_search
+    gnews = self._search_google_news_rss(query)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\src\services\search_service.py", line 66, in _search_google_news_rss
+    resp = requests.get(url, headers=self.headers, timeout=8)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\requests\adapters.py", line 644, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\urllib3\connection.py", line 796, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\urllib3\connection.py", line 975, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\urllib3\util\ssl_.py", line 461, in ssl_wrap_socket
+    context.load_verify_locations(ca_certs, ca_cert_dir, ca_cert_data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

@@ -1,34 +1,31 @@
 import os
-from openai import OpenAI
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
 
 class LLMService:
     def __init__(self):
-        self.api_key = os.getenv("OPENROUTER_API_KEY")
+        self.api_key = os.getenv("OPENROUTER_API_KEY", "").strip()
         self.base_url = "https://openrouter.ai/api/v1"
-        self.model = os.getenv("OPENROUTER_MODEL", "google/gemini-2.0-flash-lite-preview-02-05:free")
+        self.model = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.1-8b-instruct:free")
         
-        if self.api_key:
-            self.client = OpenAI(
-                base_url=self.base_url,
-                api_key=self.api_key,
-            )
-        else:
-            self.client = None
+        self.client = None
 
     def evaluate_claim(self, claim: str, evidence: str) -> dict:
         """
         Uses an LLM to perform a high-level semantic evaluation of the claim 
         against the gathered evidence.
         """
-        if not self.client:
+        if not self.api_key:
             return {
                 "verdict": "UNVERIFIED",
-                "confidence": 0.1,
-                "reasoning": "AI Evaluation skipped: No API Key provided."
+                "confidence_score": 0.1,
+                "brief_reasoning": "AI Evaluation skipped: No API Key provided."
             }
+
+        # Cap evidence to avoid hitting token limits
+        evidence = evidence[:5000]
 
         prompt = f"""
         Role: Expert Fact-Checker
@@ -51,22 +48,47 @@ class LLMService:
             "brief_reasoning": "One sentence explaining why."
         }}
         """
+        import requests
+        import json
 
+        payload = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}]
+        }
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://factguard.ai", 
+            "X-Title": "FactGuard AI Verification",
+        }
+        
         try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[{"role": "user", "content": prompt}],
-                response_format={ "type": "json_object" }
+            # Use requests with verify=False to bypass SSL check
+            resp = requests.post(
+                f"{self.base_url}/chat/completions",
+                headers=headers,
+                data=json.dumps(payload),
+                verify=False,
+                timeout=30
             )
-            import json
-            result = json.loads(response.choices[0].message.content)
-            return result
+            if resp.status_code == 200:
+                result_json = resp.json()["choices"][0]["message"]["content"]
+                # Try to clean up markdown if present
+                if "```json" in result_json:
+                    result_json = re.search(r"```json\s*(.*?)\s*```", result_json, re.DOTALL).group(1)
+                elif "```" in result_json:
+                    result_json = re.search(r"```\s*(.*?)\s*```", result_json, re.DOTALL).group(1)
+                return json.loads(result_json.strip())
+            else:
+                error_body = resp.text
+                print(f"[LLM ERROR] Status {resp.status_code}: {error_body}")
+                return {"verdict": "UNVERIFIED", "confidence_score": 0.2, "brief_reasoning": f"HTTP Error {resp.status_code}: {error_body[:100]}"}
         except Exception as e:
             print(f"[LLM ERROR] {e}")
             return {
                 "verdict": "UNVERIFIED",
-                "confidence": 0.2,
-                "reasoning": f"AI Evaluation failed: {str(e)}"
+                "confidence_score": 0.2,
+                "brief_reasoning": f"AI Evaluation failed: {str(e)}"
             }
 
 _service = LLMService()

@@ -1,0 +1,24 @@
+
+==================================================
+  RE-TESTING OPTIMIZED VERIFICATION
+==================================================
+
+Claim: Drinking bleach cures COVID
+VERDICT: MISLEADING (65%)
+Reasoning: HTTP Error 404: {"error":{"message":"No endpoints found for google/gemini-2.0-flash-exp:free.","code":404},"user_id"
+--------------------------------------------------
+
+Claim: Sharks are mammals
+VERDICT: MISLEADING (65%)
+Reasoning: HTTP Error 404: {"error":{"message":"No endpoints found for google/gemini-2.0-flash-exp:free.","code":404},"user_id"
+--------------------------------------------------
+
+Claim: Barack Obama was the 44th president of the United States
+VERDICT: TRUE (96%)
+Reasoning: HTTP Error 404: {"error":{"message":"No endpoints found for google/gemini-2.0-flash-exp:free.","code":404},"user_id"
+--------------------------------------------------
+
+Claim: The human body has 206 bones
+VERDICT: UNVERIFIED (20%)
+Reasoning: HTTP Error 404: {"error":{"message":"No endpoints found for google/gemini-2.0-flash-exp:free.","code":404},"user_id"
+--------------------------------------------------

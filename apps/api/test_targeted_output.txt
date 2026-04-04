@@ -1,0 +1,183 @@
+======================================================================
+  FACTGUARD — TARGETED ACCURACY TEST
+======================================================================
+
+============================================================
+[VERIFY] CLAIM: Drinking bleach cures COVID
+============================================================
+[INFO] Extraordinary: True
+[INFO] Entities: ['Drinking', 'bleach', 'cures']
+[INFO] Counter-query: drinking bleach cures covid true or false
+[SEARCH] Querying: Drinking bleach cures COVID
+  [DDG] Found 5 results
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 10
+[SEARCH] Querying: Drinking bleach cures COVID fact check true or false
+  [DDG] Found 5 results
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 10
+[SEARCH] Querying: drinking bleach cures covid true or false
+  [DDG] Found 5 results
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 10
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMioAFBVV95cUxNbVJMd3kwak1fUkVMaEp6UlVXOWZfQkwzSlZRUVNQUEdCNDhrYTB2QU5aR2Q4dkNkRFRKOGU1QlJfTVl1QnRwaEJUT3lKWVVPZDhuQUwtLWJrdDZQWl9Lc052YkZLN0Rfc2paSUwydGYwR1dhcWFsRDRaeXFZdElPYVI0bG54UWVUR3cwVkJoXzI3S0cwWDhLNzZ1T2JlZElh?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiogFBVV95cUxNQkY4SVIyamN3YVZCMW1pdE5rX2s1NDZoQnBEcTF6Z1QxRlhNNVZfblV0V0ZXMkdVbVlrdUxpbGZ3aUE3U2ZxV0c2Ym1BZVdmSlRiNHhIZFo5bndFbEk2dTdLc051TkFXcG5rc2hwTVN5ZVo0WjN0dE1mY2c1TjJBMFJMdWpDTi0tVTR5ZW9SbjFzV0Y2bG84ejQtdU1ZVms3dGc?oc=5
+[WIKI] Drinking: Drinking is the act of ingesting water or other liquids into the body through the mouth, proboscis, or elsewhere. Humans...
+[WIKI] bleach: Bleach is the generic name for any chemical product that is used industrially or domestically to remove color from fabri...
+[LLM ERROR] Error code: 400 - {'error': {'message': 'google/gemini-2.0-flash-lite-preview-02-05:free is not a valid model ID', 'code': 400}, 'user_id': 'user_317lwZlxJCWvUjzBmyaBLCw4Xa7'}
+[AI VERDICT] UNVERIFIED (Conf: None)
+
+[SCORES] Debunk: 29.5 | Confirm: 33.5
+[FLAGS]  Direct: True | Contradiction: True | Inversion: False
+
+[VERDICT] UNVERIFIED — Confidence: 83%
+============================================================
+
+
+Claim: Drinking bleach cures COVID
+✗ FAIL | Expected: FALSE | Got: UNVERIFIED (83%)
+----------------------------------------------------------------------
+
+============================================================
+[VERIFY] CLAIM: Sharks are mammals
+============================================================
+[INFO] Extraordinary: False
+[INFO] Entities: ['Sharks', 'mammals']
+[INFO] Counter-query: sharks are mammals true or false
+[SEARCH] Querying: Sharks are mammals
+  [DDG] Found 5 results
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 10
+[SEARCH] Querying: Sharks are mammals fact check true or false
+  [DDG] Found 5 results
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 10
+[SEARCH] Querying: sharks are mammals true or false
+  [DDG] Found 5 results
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 10
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMia0FVX3lxTE1XS2c1cDZBa0d5TG0xN0F5SnJuXy1uZVFpTkp2Ri1ESjZfQTFaaXlVTDRZcmZQNVpEdDUyb1RyUzc5NmZXUzhOQm5SZFVfSmdILUhoU0xNZ0k4OGs3WWwwUnRlbFVqbjk5ZUs4?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMingFBVV95cUxPRnh3d01HOEZNUWN6eHZxMmM1aGlsWmpNdVNTOXdTMWs0bnJSc2FPZ2E0OTR5Wmo3Vm9pS1FiTHYyYWM0WjEtM3Jyc0wxQXRFUGpBNVdtYWRBMjhhS1ltSFdEUEJHLVI4WTR6XzBoeE5iVnA4OUxpeEtNdVYzQ1R0eDFCanp5RDJDbHIwajVpMXB6RXNqaVFxRVhzdEloUQ?oc=5
+[WIKI] Sharks: Sharks are a group of elasmobranch cartilaginous fishes characterized by a ribless endoskeleton, dermal denticles, five ...
+[WIKI] mammals: A mammal is a vertebrate animal of the class Mammalia. Mammals are characterised by the presence of milk-producing mamma...
+[LLM ERROR] Error code: 400 - {'error': {'message': 'google/gemini-2.0-flash-lite-preview-02-05:free is not a valid model ID', 'code': 400}, 'user_id': 'user_317lwZlxJCWvUjzBmyaBLCw4Xa7'}
+[AI VERDICT] UNVERIFIED (Conf: None)
+
+[SCORES] Debunk: 48.0 | Confirm: 83.0
+[FLAGS]  Direct: True | Contradiction: True | Inversion: False
+
+[VERDICT] UNVERIFIED — Confidence: 40%
+============================================================
+
+
+Claim: Sharks are mammals
+✗ FAIL | Expected: FALSE | Got: UNVERIFIED (40%)
+----------------------------------------------------------------------
+
+============================================================
+[VERIFY] CLAIM: Barack Obama was the 44th president of the United States
+============================================================
+[INFO] Extraordinary: False
+[INFO] Entities: ['United States', 'Obama', 'States', 'Barack Obama']
+[INFO] Counter-query: barack obama was the 44th president of the united states true or false
+[SEARCH] Querying: Barack Obama was the 44th president of the United States
+  [DDG] Found 5 results
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 10
+[SEARCH] Querying: Barack Obama was the 44th president of the United States fact check true or false
+  [DDG] Found 5 results
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 10
+[SEARCH] Querying: barack obama was the 44th president of the united states true or false
+  [DDG] Found 5 results
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 10
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiZkFVX3lxTE1lcmQ0S25wdC03Mm9zcDR3Mll4T2FHUW5lV0M4bzBIdFNtcE5oZFZLYnNKV3ZDUGUyRU9LMGcyNTlpd0xSZmRzWURyekhEZFNtNjZYX3JwTDZBbnJZQzRkVmktc2FEZw?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMiswFBVV95cUxOaHV1bDlPQ2JtRGJQemZ1Tl9PQ3ltNHhVbFNldGw4aThJb2Nnel80NG84aVBEd3hBR1pxenlHdGFKbXhEcFJCWlVvVVRKdVBCT1dUel9aRUhpeTBBSl9obHlQLXRCandoMV9pMG1RZ2lEUXlQdXlSenhIMGVfZ2lPLWdiN0lWX0I2WmhhNjZEcFRJTjZNbWJqMk1ibnhVMFJnUUxMMHRIQmdwU1RhbFRVM1k4NNIBuAFBVV95cUxPR2hFQlFTaWdSdG1WNUxsWUxzZS1WMm1fSnE5Sk1MdVhUWFFiSTdYdDk5OTBfZHN1aWhjRkh0VDBtS0ZzX1BTRmhpbTc1U01ZRFY2U0UwTElvMUZxSmtTWU5UbGpDQjlWem9hX2phTE91djBuMzJOV0g3XzRUMzNqaDFLNUJiQjRESHRJaHhfcVh0Y0N4d2VsaVIwUkdwci1NYWxlOTBPMWNMZk5VUjVBTjBuMDBMTUJz?oc=5
+[WIKI] United States: The United States of America (USA), also known as the United States (U.S.) or America, is a country primarily located in...
+[WIKI] Obama: Barack Hussein Obama II is an American politician who served as the 44th president of the United States from 2009 to 201...
+[LLM ERROR] Error code: 400 - {'error': {'message': 'google/gemini-2.0-flash-lite-preview-02-05:free is not a valid model ID', 'code': 400}, 'user_id': 'user_317lwZlxJCWvUjzBmyaBLCw4Xa7'}
+[AI VERDICT] UNVERIFIED (Conf: None)
+
+[SCORES] Debunk: 2.0 | Confirm: 126.0
+[FLAGS]  Direct: True | Contradiction: False | Inversion: False
+
+[VERDICT] TRUE — Confidence: 96%
+============================================================
+
+
+Claim: Barack Obama was the 44th president of the United States
+✓ PASS | Expected: TRUE | Got: TRUE (96%)
+----------------------------------------------------------------------
+
+============================================================
+[VERIFY] CLAIM: The human body has 206 bones
+============================================================
+[INFO] Extraordinary: False
+[INFO] Entities: ['human', 'body', 'bones']
+[INFO] Counter-query: the human body has 206 bones true or false
+[SEARCH] Querying: The human body has 206 bones
+  [DDG] Found 5 results
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 10
+[SEARCH] Querying: The human body has 206 bones fact check true or false
+  [DDG] Found 5 results
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 10
+[SEARCH] Querying: the human body has 206 bones true or false
+  [DDG] Found 5 results
+  [GOOGLE NEWS] Found 5 articles
+[SEARCH] Total unique results: 10
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMikgFBVV95cUxNSWxtRUN1cmM5bzVDdEpSbGFCYXM5THZWZEJqTWZ0MGtQeEJkcDdHUHZfMTNpLTBlX0g0cHZQTmw2bWd2Tko0N2Jma2xrcEU0R3JwRldVenRvaVAyQjdhckIydnJpQkx2S3huSTVuUWZmUVpjYzI4MTlnN1BCTnpFenZYNkYwZ2NDS1o4N1loMTBxdw?oc=5
+[DEEP SCRAPE] Visiting: https://news.google.com/rss/articles/CBMid0FVX3lxTFBqOTFkcE80LWlIYk9heHhGNzd2U2l1eWV0VktaZ3NIZWdWcnBwQVVhOHZ4M2J2MUZCblljcFFpd1FWYk00T1IzZWNhalVCS1FJN09QYmNFU2xNVEljU2hNNlRIOGZVSXF0MlVpU0NTTDFHbDZOME1B?oc=5
+Traceback (most recent call last):
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\test_targeted.py", line 23, in <module>
+    result = svc.process_claim(claim)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\src\services\verification_service.py", line 380, in process_claim
+    content = self.search.scrape_article(url)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\src\services\search_service.py", line 254, in scrape_article
+    resp = requests.get(url, headers=self.headers, timeout=10)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\requests\adapters.py", line 644, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "D:\SATYA PTT INTEL PROJECT\apps\api\venv\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\arunj\AppData\Local\Python\pythoncore-3.14-64\Lib\http\client.py", line 1450, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\arunj\AppData\Local\Python\pythoncore-3.14-64\Lib\http\client.py", line 336, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\arunj\AppData\Local\Python\pythoncore-3.14-64\Lib\http\client.py", line 297, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\arunj\AppData\Local\Python\pythoncore-3.14-64\Lib\socket.py", line 725, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Users\arunj\AppData\Local\Python\pythoncore-3.14-64\Lib\ssl.py", line 1304, in recv_into
+    return self.read(nbytes, buffer)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\arunj\AppData\Local\Python\pythoncore-3.14-64\Lib\ssl.py", line 1138, in read
+    return self._sslobj.read(len, buffer)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyboardInterrupt
